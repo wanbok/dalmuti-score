@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Player, Session, Round, RoundResult } from "@/types";
+import type { Player, Session, Round, RoundResult, ThemeMode } from "@/types";
 import { generateId } from "@/lib/id";
 
 interface AppState {
   players: Player[];
   sessions: Session[];
+  theme: ThemeMode;
 
   // Player CRUD
   addPlayer: (name: string) => Player;
@@ -22,10 +23,13 @@ interface AppState {
   getSession: (id: string) => Session | undefined;
 
   // Round CRUD
-  addRound: (sessionId: string, participantIds: string[], results: RoundResult[]) => void;
-  updateRound: (sessionId: string, roundId: string, participantIds: string[], results: RoundResult[]) => void;
+  addRound: (sessionId: string, participantIds: string[], results: RoundResult[], revolution?: boolean) => void;
+  updateRound: (sessionId: string, roundId: string, participantIds: string[], results: RoundResult[], revolution?: boolean) => void;
   deleteRound: (sessionId: string, roundId: string) => void;
   getRound: (sessionId: string, roundId: string) => Round | undefined;
+
+  // Theme
+  setTheme: (theme: ThemeMode) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -33,6 +37,7 @@ export const useStore = create<AppState>()(
     (set, get) => ({
       players: [],
       sessions: [],
+      theme: "system" as ThemeMode,
 
       addPlayer: (name: string) => {
         const player: Player = { id: generateId(), name, createdAt: Date.now() };
@@ -109,11 +114,12 @@ export const useStore = create<AppState>()(
         return get().sessions.find((s) => s.id === id);
       },
 
-      addRound: (sessionId: string, participantIds: string[], results: RoundResult[]) => {
+      addRound: (sessionId: string, participantIds: string[], results: RoundResult[], revolution?: boolean) => {
         const round: Round = {
           id: generateId(),
           participantIds,
           results,
+          revolution: revolution ?? false,
           createdAt: Date.now(),
         };
         set((state) => ({
@@ -125,7 +131,7 @@ export const useStore = create<AppState>()(
         }));
       },
 
-      updateRound: (sessionId: string, roundId: string, participantIds: string[], results: RoundResult[]) => {
+      updateRound: (sessionId: string, roundId: string, participantIds: string[], results: RoundResult[], revolution?: boolean) => {
         set((state) => ({
           sessions: state.sessions.map((s) =>
             s.id === sessionId
@@ -133,7 +139,7 @@ export const useStore = create<AppState>()(
                   ...s,
                   rounds: s.rounds.map((r) =>
                     r.id === roundId
-                      ? { ...r, participantIds, results }
+                      ? { ...r, participantIds, results, revolution: revolution ?? false }
                       : r
                   ),
                 }
@@ -156,9 +162,21 @@ export const useStore = create<AppState>()(
         const session = get().sessions.find((s) => s.id === sessionId);
         return session?.rounds.find((r) => r.id === roundId);
       },
+
+      setTheme: (theme: ThemeMode) => set({ theme }),
     }),
     {
       name: "dalmuti-score-storage",
+      version: 1,
+      migrate: (persistedState, version) => {
+        if (version === 0) {
+          const state = persistedState as Record<string, unknown>;
+          if (!state.theme) {
+            state.theme = "system";
+          }
+        }
+        return persistedState as AppState;
+      },
     }
   )
 );

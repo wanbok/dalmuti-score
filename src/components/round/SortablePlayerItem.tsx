@@ -29,15 +29,15 @@ export function SortablePlayerItem({ id, name, rank }: SortablePlayerItemProps) 
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm touch-none select-none"
+      className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-sm touch-none select-none"
       {...attributes}
       {...listeners}
     >
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-sm font-bold text-primary-text">
         {rank}
       </span>
-      <span className="font-medium text-gray-900">{name}</span>
-      <span className="ml-auto text-gray-400">
+      <span className="font-medium text-text-primary">{name}</span>
+      <span className="ml-auto text-text-tertiary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -68,11 +68,11 @@ interface PlayerItemOverlayProps {
 
 export function PlayerItemOverlay({ name, rank }: PlayerItemOverlayProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-blue-300 bg-white px-4 py-3 shadow-lg">
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+    <div className="flex items-center gap-3 rounded-lg border border-border-focus bg-surface px-4 py-3 shadow-lg">
+      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-sm font-bold text-primary-text">
         {rank}
       </span>
-      <span className="font-medium text-gray-900">{name}</span>
+      <span className="font-medium text-text-primary">{name}</span>
     </div>
   );
 }

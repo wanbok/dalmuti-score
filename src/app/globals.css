@@ -1,19 +1,356 @@
 @import "tailwindcss";
 
+/* ===== Light Theme (Default) ===== */
 :root {
-  --background: #f9fafb;
-  --foreground: #171717;
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-sunken: #f9fafb;
+  --color-surface-overlay: rgba(255, 255, 255, 0.95);
+
+  /* Borders */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-border-focus: #3b82f6;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-text-inverse: #ffffff;
+
+  /* Interactive — Primary */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-active: #1e40af;
+  --color-primary-light: #dbeafe;
+  --color-primary-text: #1d4ed8;
+
+  /* Interactive — Secondary */
+  --color-secondary: #e5e7eb;
+  --color-secondary-hover: #d1d5db;
+  --color-secondary-active: #9ca3af;
+  --color-secondary-text: #1f2937;
+
+  /* Interactive — Danger */
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-danger-active: #991b1b;
+  --color-danger-light: #fecaca;
+  --color-danger-text: #dc2626;
+
+  /* Badge — Gold (1st place) */
+  --color-badge-gold-bg: #fef9c3;
+  --color-badge-gold-text: #854d0e;
+  --color-badge-gold-border: #fcd34d;
+
+  /* Badge — Silver (2nd place) */
+  --color-badge-silver-bg: #f3f4f6;
+  --color-badge-silver-text: #374151;
+  --color-badge-silver-border: #d1d5db;
+
+  /* Badge — Bronze (3rd place) */
+  --color-badge-bronze-bg: #ffedd5;
+  --color-badge-bronze-text: #9a3412;
+  --color-badge-bronze-border: #fdba74;
+
+  /* Badge — Default */
+  --color-badge-default-bg: #f9fafb;
+  --color-badge-default-text: #4b5563;
+  --color-badge-default-border: #e5e7eb;
+
+  /* Score highlight */
+  --color-score-zero: #2563eb;
+
+  /* Skeleton loading */
+  --color-skeleton: #e5e7eb;
+
+  /* Overlay / Backdrop */
+  --color-backdrop: rgba(0, 0, 0, 0.5);
+
+  /* Chart player colors */
+  --color-chart-1: #2563eb;
+  --color-chart-2: #dc2626;
+  --color-chart-3: #16a34a;
+  --color-chart-4: #ca8a04;
+  --color-chart-5: #9333ea;
+  --color-chart-6: #0891b2;
+  --color-chart-7: #e11d48;
+  --color-chart-8: #65a30d;
+  --color-chart-9: #c026d3;
+  --color-chart-10: #0d9488;
+  --color-chart-11: #ea580c;
+  --color-chart-12: #4f46e5;
+
+  /* Success (for positive trends) */
+  --color-success: #16a34a;
+  --color-success-text: #15803d;
 }
 
+/* ===== Dark Theme (System Preference) ===== */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    /* Surfaces */
+    --color-surface: #1e2028;
+    --color-surface-elevated: #2a2d35;
+    --color-surface-sunken: #111318;
+    --color-surface-overlay: rgba(30, 32, 40, 0.95);
+
+    /* Borders */
+    --color-border: #374151;
+    --color-border-light: #2a2d35;
+    --color-border-focus: #60a5fa;
+
+    /* Text */
+    --color-text-primary: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+    --color-text-tertiary: #6b7280;
+    --color-text-inverse: #111827;
+
+    /* Interactive — Primary */
+    --color-primary: #3b82f6;
+    --color-primary-hover: #60a5fa;
+    --color-primary-active: #2563eb;
+    --color-primary-light: #1e3a5f;
+    --color-primary-text: #60a5fa;
+
+    /* Interactive — Secondary */
+    --color-secondary: #374151;
+    --color-secondary-hover: #4b5563;
+    --color-secondary-active: #6b7280;
+    --color-secondary-text: #e5e7eb;
+
+    /* Interactive — Danger */
+    --color-danger: #ef4444;
+    --color-danger-hover: #f87171;
+    --color-danger-active: #dc2626;
+    --color-danger-light: #450a0a;
+    --color-danger-text: #f87171;
+
+    /* Badge — Gold */
+    --color-badge-gold-bg: #713f12;
+    --color-badge-gold-text: #fde68a;
+    --color-badge-gold-border: #92400e;
+
+    /* Badge — Silver */
+    --color-badge-silver-bg: #374151;
+    --color-badge-silver-text: #d1d5db;
+    --color-badge-silver-border: #4b5563;
+
+    /* Badge — Bronze */
+    --color-badge-bronze-bg: #7c2d12;
+    --color-badge-bronze-text: #fed7aa;
+    --color-badge-bronze-border: #9a3412;
+
+    /* Badge — Default */
+    --color-badge-default-bg: #1f2937;
+    --color-badge-default-text: #9ca3af;
+    --color-badge-default-border: #374151;
+
+    /* Score highlight */
+    --color-score-zero: #60a5fa;
+
+    /* Skeleton loading */
+    --color-skeleton: #374151;
+
+    /* Overlay / Backdrop */
+    --color-backdrop: rgba(0, 0, 0, 0.7);
+
+    /* Chart player colors (brighter for dark bg) */
+    --color-chart-1: #60a5fa;
+    --color-chart-2: #f87171;
+    --color-chart-3: #4ade80;
+    --color-chart-4: #facc15;
+    --color-chart-5: #c084fc;
+    --color-chart-6: #22d3ee;
+    --color-chart-7: #fb7185;
+    --color-chart-8: #a3e635;
+    --color-chart-9: #e879f9;
+    --color-chart-10: #2dd4bf;
+    --color-chart-11: #fb923c;
+    --color-chart-12: #818cf8;
+
+    /* Success */
+    --color-success: #4ade80;
+    --color-success-text: #4ade80;
+  }
+}
+
+/* ===== Dark Theme (Manual Override) ===== */
+:root.dark {
+  /* Surfaces */
+  --color-surface: #1e2028;
+  --color-surface-elevated: #2a2d35;
+  --color-surface-sunken: #111318;
+  --color-surface-overlay: rgba(30, 32, 40, 0.95);
+
+  /* Borders */
+  --color-border: #374151;
+  --color-border-light: #2a2d35;
+  --color-border-focus: #60a5fa;
+
+  /* Text */
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #6b7280;
+  --color-text-inverse: #111827;
+
+  /* Interactive — Primary */
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-primary-active: #2563eb;
+  --color-primary-light: #1e3a5f;
+  --color-primary-text: #60a5fa;
+
+  /* Interactive — Secondary */
+  --color-secondary: #374151;
+  --color-secondary-hover: #4b5563;
+  --color-secondary-active: #6b7280;
+  --color-secondary-text: #e5e7eb;
+
+  /* Interactive — Danger */
+  --color-danger: #ef4444;
+  --color-danger-hover: #f87171;
+  --color-danger-active: #dc2626;
+  --color-danger-light: #450a0a;
+  --color-danger-text: #f87171;
+
+  /* Badge — Gold */
+  --color-badge-gold-bg: #713f12;
+  --color-badge-gold-text: #fde68a;
+  --color-badge-gold-border: #92400e;
+
+  /* Badge — Silver */
+  --color-badge-silver-bg: #374151;
+  --color-badge-silver-text: #d1d5db;
+  --color-badge-silver-border: #4b5563;
+
+  /* Badge — Bronze */
+  --color-badge-bronze-bg: #7c2d12;
+  --color-badge-bronze-text: #fed7aa;
+  --color-badge-bronze-border: #9a3412;
+
+  /* Badge — Default */
+  --color-badge-default-bg: #1f2937;
+  --color-badge-default-text: #9ca3af;
+  --color-badge-default-border: #374151;
+
+  /* Score highlight */
+  --color-score-zero: #60a5fa;
+
+  /* Skeleton loading */
+  --color-skeleton: #374151;
+
+  /* Overlay / Backdrop */
+  --color-backdrop: rgba(0, 0, 0, 0.7);
+
+  /* Chart player colors (brighter for dark bg) */
+  --color-chart-1: #60a5fa;
+  --color-chart-2: #f87171;
+  --color-chart-3: #4ade80;
+  --color-chart-4: #facc15;
+  --color-chart-5: #c084fc;
+  --color-chart-6: #22d3ee;
+  --color-chart-7: #fb7185;
+  --color-chart-8: #a3e635;
+  --color-chart-9: #e879f9;
+  --color-chart-10: #2dd4bf;
+  --color-chart-11: #fb923c;
+  --color-chart-12: #818cf8;
+
+  /* Success */
+  --color-success: #4ade80;
+  --color-success-text: #4ade80;
+}
+
+/* ===== Tailwind v4 Theme Mapping ===== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Surfaces */
+  --color-surface: var(--color-surface);
+  --color-surface-elevated: var(--color-surface-elevated);
+  --color-surface-sunken: var(--color-surface-sunken);
+  --color-surface-overlay: var(--color-surface-overlay);
+
+  /* Borders */
+  --color-border: var(--color-border);
+  --color-border-light: var(--color-border-light);
+  --color-border-focus: var(--color-border-focus);
+
+  /* Text */
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-inverse: var(--color-text-inverse);
+
+  /* Primary */
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-text: var(--color-primary-text);
+
+  /* Secondary */
+  --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-active: var(--color-secondary-active);
+  --color-secondary-text: var(--color-secondary-text);
+
+  /* Danger */
+  --color-danger: var(--color-danger);
+  --color-danger-hover: var(--color-danger-hover);
+  --color-danger-active: var(--color-danger-active);
+  --color-danger-light: var(--color-danger-light);
+  --color-danger-text: var(--color-danger-text);
+
+  /* Success */
+  --color-success: var(--color-success);
+  --color-success-text: var(--color-success-text);
+
+  /* Score */
+  --color-score-zero: var(--color-score-zero);
+
+  /* Skeleton */
+  --color-skeleton: var(--color-skeleton);
+
+  /* Backdrop */
+  --color-backdrop: var(--color-backdrop);
+
+  /* Badge */
+  --color-badge-gold-bg: var(--color-badge-gold-bg);
+  --color-badge-gold-text: var(--color-badge-gold-text);
+  --color-badge-gold-border: var(--color-badge-gold-border);
+  --color-badge-silver-bg: var(--color-badge-silver-bg);
+  --color-badge-silver-text: var(--color-badge-silver-text);
+  --color-badge-silver-border: var(--color-badge-silver-border);
+  --color-badge-bronze-bg: var(--color-badge-bronze-bg);
+  --color-badge-bronze-text: var(--color-badge-bronze-text);
+  --color-badge-bronze-border: var(--color-badge-bronze-border);
+  --color-badge-default-bg: var(--color-badge-default-bg);
+  --color-badge-default-text: var(--color-badge-default-text);
+  --color-badge-default-border: var(--color-badge-default-border);
+
+  /* Chart Colors */
+  --color-chart-1: var(--color-chart-1);
+  --color-chart-2: var(--color-chart-2);
+  --color-chart-3: var(--color-chart-3);
+  --color-chart-4: var(--color-chart-4);
+  --color-chart-5: var(--color-chart-5);
+  --color-chart-6: var(--color-chart-6);
+  --color-chart-7: var(--color-chart-7);
+  --color-chart-8: var(--color-chart-8);
+  --color-chart-9: var(--color-chart-9);
+  --color-chart-10: var(--color-chart-10);
+  --color-chart-11: var(--color-chart-11);
+  --color-chart-12: var(--color-chart-12);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* ===== Base Styles ===== */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

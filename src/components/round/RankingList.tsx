@@ -22,18 +22,21 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { SortablePlayerItem, PlayerItemOverlay } from "./SortablePlayerItem";
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import type { Player } from "@/types";
 
 interface RankingListProps {
   players: Player[];
   initialOrder?: string[];
-  onSave: (orderedIds: string[]) => void;
+  initialRevolution?: boolean;
+  onSave: (orderedIds: string[], revolution: boolean) => void;
   onBack: () => void;
 }
 
 export function RankingList({
   players,
   initialOrder,
+  initialRevolution = false,
   onSave,
   onBack,
 }: RankingListProps) {
@@ -41,6 +44,7 @@ export function RankingList({
     initialOrder ?? players.map((p) => p.id)
   );
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [revolution, setRevolution] = useState(initialRevolution);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -76,8 +80,8 @@ export function RankingList({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">순위 입력</h3>
-        <p className="text-sm text-gray-500">드래그로 순서를 변경하세요</p>
+        <h3 className="font-semibold text-text-primary">순위 입력</h3>
+        <p className="text-sm text-text-secondary">드래그로 순서를 변경하세요</p>
       </div>
 
       <DndContext
@@ -114,11 +118,24 @@ export function RankingList({
         </DragOverlay>
       </DndContext>
 
+      <Checkbox
+        id="revolution"
+        label="혁명 발생"
+        checked={revolution}
+        onChange={() => setRevolution((prev) => !prev)}
+      />
+
+      {revolution && (
+        <div className="rounded-lg border border-primary-light bg-primary-light px-4 py-3 text-sm text-primary-text">
+          혁명! 세금 면제 — 이번 라운드는 세금을 내지 않습니다.
+        </div>
+      )}
+
       <div className="flex gap-2">
         <Button variant="secondary" onClick={onBack} className="flex-1">
           뒤로
         </Button>
-        <Button onClick={() => onSave(orderedIds)} className="flex-1">
+        <Button onClick={() => onSave(orderedIds, revolution)} className="flex-1">
           저장
         </Button>
       </div>

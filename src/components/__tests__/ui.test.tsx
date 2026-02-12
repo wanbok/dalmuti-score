@@ -29,10 +29,10 @@ describe("Button", () => {
 
   it("applies variant classes", () => {
     const { rerender } = render(<Button variant="danger">삭제</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-red-600");
+    expect(screen.getByRole("button")).toHaveClass("bg-danger");
 
     rerender(<Button variant="secondary">취소</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-gray-200");
+    expect(screen.getByRole("button")).toHaveClass("bg-secondary");
   });
 
   it("meets 44px min touch target", () => {

@@ -6,10 +6,10 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<Variant, string> = {
-  gold: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  silver: "bg-gray-100 text-gray-700 border-gray-300",
-  bronze: "bg-orange-100 text-orange-800 border-orange-300",
-  default: "bg-gray-50 text-gray-600 border-gray-200",
+  gold: "bg-badge-gold-bg text-badge-gold-text border-badge-gold-border",
+  silver: "bg-badge-silver-bg text-badge-silver-text border-badge-silver-border",
+  bronze: "bg-badge-bronze-bg text-badge-bronze-text border-badge-bronze-border",
+  default: "bg-badge-default-bg text-badge-default-text border-badge-default-border",
 };
 
 export function Badge({ variant = "default", children }: BadgeProps) {

@@ -33,19 +33,19 @@ export function PlayerRoster({ sessionId }: PlayerRosterProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="font-semibold text-gray-900">선수 목록</h3>
+      <h3 className="font-semibold text-text-primary">선수 목록</h3>
       <ul className="flex flex-col gap-1">
         {sessionPlayers.map((player) => (
           <li
             key={player.id}
-            className="flex items-center justify-between rounded-lg px-3 py-2 bg-gray-50"
+            className="flex items-center justify-between rounded-lg px-3 py-2 bg-surface-sunken"
           >
             <span className="text-sm">{player.name}</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => removePlayerFromSession(sessionId, player.id)}
-              className="text-red-500 hover:text-red-700"
+              className="text-danger hover:text-danger-hover"
             >
               제거
             </Button>

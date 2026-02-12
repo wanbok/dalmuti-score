@@ -24,7 +24,7 @@ export function ParticipantSelector({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">참가자 선택</h3>
+        <h3 className="font-semibold text-text-primary">참가자 선택</h3>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={onSelectAll}>
             전체 선택

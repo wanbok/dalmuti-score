@@ -20,11 +20,11 @@ export function SessionCard({ session }: SessionCardProps) {
   return (
     <Card className="flex flex-col gap-2">
       <Link href={`/sessions/${session.id}`} className="block">
-        <h3 className="font-bold text-gray-900">{session.name}</h3>
-        <p className="text-sm text-gray-500 mt-1">
+        <h3 className="font-bold text-text-primary">{session.name}</h3>
+        <p className="text-sm text-text-secondary mt-1">
           {sessionPlayers.map((p) => p.name).join(", ") || "선수 없음"}
         </p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-text-tertiary mt-1">
           {session.rounds.length}라운드
         </p>
       </Link>
@@ -37,7 +37,7 @@ export function SessionCard({ session }: SessionCardProps) {
               deleteSession(session.id);
             }
           }}
-          className="text-red-500 hover:text-red-700"
+          className="text-danger hover:text-danger-hover"
         >
           삭제
         </Button>

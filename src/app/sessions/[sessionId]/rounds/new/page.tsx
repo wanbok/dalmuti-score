@@ -71,12 +71,12 @@ export default function NewRoundPage({
     });
   };
 
-  const handleSave = (orderedIds: string[]) => {
+  const handleSave = (orderedIds: string[], revolution: boolean) => {
     const results: RoundResult[] = orderedIds.map((playerId, index) => ({
       playerId,
       rank: index + 1,
     }));
-    addRound(sessionId, orderedIds, results);
+    addRound(sessionId, orderedIds, results, revolution);
     router.push(`/sessions/${sessionId}`);
   };
 

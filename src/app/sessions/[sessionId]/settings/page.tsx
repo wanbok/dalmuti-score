@@ -83,8 +83,8 @@ export default function SessionSettingsPage({
           <PlayerRoster sessionId={sessionId} />
         </Card>
 
-        <Card className="border-red-200">
-          <h3 className="font-semibold text-red-600 mb-3">위험 영역</h3>
+        <Card className="border-danger-light">
+          <h3 className="font-semibold text-danger-text mb-3">위험 영역</h3>
           <Button variant="danger" onClick={handleDelete}>
             세션 삭제
           </Button>

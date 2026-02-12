@@ -175,6 +175,454 @@ describe("Round CRUD", () => {
   });
 });
 
+describe("Theme state", () => {
+  it("defaults to system theme", () => {
+    expect(useStore.getState().theme).toBe("system");
+  });
+
+  it("setTheme updates theme", () => {
+    useStore.getState().setTheme("dark");
+    expect(useStore.getState().theme).toBe("dark");
+
+    useStore.getState().setTheme("light");
+    expect(useStore.getState().theme).toBe("light");
+
+    useStore.getState().setTheme("system");
+    expect(useStore.getState().theme).toBe("system");
+  });
+});
+
+describe("Revolution on rounds", () => {
+  it("addRound stores revolution flag", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const session = useStore.getState().createSession("테스트", [p1.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }],
+      true
+    );
+
+    const round = useStore.getState().getSession(session.id)!.rounds[0];
+    expect(round.revolution).toBe(true);
+  });
+
+  it("addRound defaults revolution to false", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const session = useStore.getState().createSession("테스트", [p1.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }]
+    );
+
+    const round = useStore.getState().getSession(session.id)!.rounds[0];
+    expect(round.revolution).toBe(false);
+  });
+
+  it("updateRound stores revolution flag", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const session = useStore.getState().createSession("테스트", [p1.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }]
+    );
+
+    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+
+    useStore.getState().updateRound(
+      session.id,
+      roundId,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }],
+      true
+    );
+
+    const round = useStore.getState().getRound(session.id, roundId)!;
+    expect(round.revolution).toBe(true);
+  });
+
+  it("updateRound defaults revolution to false", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const session = useStore.getState().createSession("테스트", [p1.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }],
+      true
+    );
+
+    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+
+    useStore.getState().updateRound(
+      session.id,
+      roundId,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }]
+    );
+
+    const round = useStore.getState().getRound(session.id, roundId)!;
+    expect(round.revolution).toBe(false);
+  });
+});
+
+describe("Revolution chain and recalculation", () => {
+  it("stores multiple revolution rounds in same session", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const p2 = useStore.getState().addPlayer("영희");
+    const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
+      true
+    );
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
+    );
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
+      true
+    );
+
+    const rounds = useStore.getState().getSession(session.id)!.rounds;
+    expect(rounds).toHaveLength(3);
+    expect(rounds[0].revolution).toBe(true);
+    expect(rounds[1].revolution).toBe(false);
+    expect(rounds[2].revolution).toBe(true);
+  });
+
+  it("toggles revolution flag via updateRound", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const session = useStore.getState().createSession("테스트", [p1.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id],
+      [{ playerId: p1.id, rank: 1 }]
+    );
+
+    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(false);
+
+    // Toggle to true
+    useStore.getState().updateRound(session.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], true);
+    expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(true);
+
+    // Toggle back to false
+    useStore.getState().updateRound(session.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], false);
+    expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(false);
+  });
+
+  it("deleting revolution round does not affect other rounds", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const p2 = useStore.getState().addPlayer("영희");
+    const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
+      true
+    );
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
+    );
+
+    const revolutionRoundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    useStore.getState().deleteRound(session.id, revolutionRoundId);
+
+    const remaining = useStore.getState().getSession(session.id)!.rounds;
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0].revolution).toBe(false);
+    expect(remaining[0].results[0].rank).toBe(2);
+  });
+
+  it("updating non-revolution round preserves other round's revolution flag", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const p2 = useStore.getState().addPlayer("영희");
+    const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
+      true
+    );
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
+    );
+
+    const rounds = useStore.getState().getSession(session.id)!.rounds;
+    const normalRoundId = rounds[1].id;
+
+    // Update the non-revolution round's results
+    useStore.getState().updateRound(
+      session.id,
+      normalRoundId,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
+    );
+
+    const updated = useStore.getState().getSession(session.id)!.rounds;
+    expect(updated[0].revolution).toBe(true); // revolution round unchanged
+    expect(updated[1].revolution).toBe(false);
+    expect(updated[1].results[0].rank).toBe(1); // results updated
+  });
+
+  it("scoreboard recalculates correctly after round deletion", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const p2 = useStore.getState().addPlayer("영희");
+    const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+
+    // Round 1: 철수 1st (score 0), 영희 2nd (score 1)
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
+    );
+    // Round 2: 영희 1st (score 0), 철수 2nd (score 1)
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p2.id, rank: 1 }, { playerId: p1.id, rank: 2 }]
+    );
+    // Round 3: 철수 1st (score 0), 영희 2nd (score 1)
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
+    );
+
+    // Before deletion: 철수=0+1+0=1, 영희=1+0+1=2
+    let updated = useStore.getState().getSession(session.id)!;
+    let board = buildScoreboard(updated.playerIds, updated.rounds);
+    expect(board.find((e) => e.playerId === p1.id)!.total).toBe(1);
+    expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
+
+    // Delete round 2 (where 영희 won)
+    const round2Id = updated.rounds[1].id;
+    useStore.getState().deleteRound(session.id, round2Id);
+
+    // After deletion: 철수=0+0=0, 영희=1+1=2
+    updated = useStore.getState().getSession(session.id)!;
+    expect(updated.rounds).toHaveLength(2);
+    board = buildScoreboard(updated.playerIds, updated.rounds);
+    expect(board.find((e) => e.playerId === p1.id)!.total).toBe(0);
+    expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
+  });
+
+  it("scoreboard recalculates correctly after round update", () => {
+    const p1 = useStore.getState().addPlayer("철수");
+    const p2 = useStore.getState().addPlayer("영희");
+    const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
+    );
+    useStore.getState().addRound(
+      session.id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
+    );
+
+    // Before: 철수=0+0=0, 영희=1+1=2
+    let updated = useStore.getState().getSession(session.id)!;
+    let board = buildScoreboard(updated.playerIds, updated.rounds);
+    expect(board.find((e) => e.playerId === p1.id)!.total).toBe(0);
+    expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
+
+    // Swap ranks in round 2
+    const round2Id = updated.rounds[1].id;
+    useStore.getState().updateRound(
+      session.id,
+      round2Id,
+      [p1.id, p2.id],
+      [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
+    );
+
+    // After: 철수=0+1=1, 영희=1+0=1 → tied
+    updated = useStore.getState().getSession(session.id)!;
+    board = buildScoreboard(updated.playerIds, updated.rounds);
+    expect(board.find((e) => e.playerId === p1.id)!.total).toBe(1);
+    expect(board.find((e) => e.playerId === p2.id)!.total).toBe(1);
+    expect(board.find((e) => e.playerId === p1.id)!.rank).toBe(1);
+    expect(board.find((e) => e.playerId === p2.id)!.rank).toBe(1);
+  });
+});
+
+describe("Backward compatibility — existing data without revolution", () => {
+  it("handles rounds with undefined revolution field in store operations", () => {
+    // Simulate old data loaded from localStorage (no revolution field)
+    useStore.setState({
+      players: [{ id: "p1", name: "철수", createdAt: 1000 }],
+      sessions: [{
+        id: "s1",
+        name: "옛날 세션",
+        playerIds: ["p1"],
+        rounds: [{
+          id: "r1",
+          participantIds: ["p1"],
+          results: [{ playerId: "p1", rank: 1 }],
+          createdAt: 1000,
+          // revolution: undefined — old data
+        }],
+        createdAt: 1000,
+      }],
+    });
+
+    // Store operations should still work
+    const session = useStore.getState().getSession("s1")!;
+    expect(session.rounds).toHaveLength(1);
+    expect(session.rounds[0].revolution).toBeUndefined();
+
+    const round = useStore.getState().getRound("s1", "r1")!;
+    expect(round.results[0].rank).toBe(1);
+  });
+
+  it("updating old round without revolution defaults to false", () => {
+    useStore.setState({
+      players: [
+        { id: "p1", name: "철수", createdAt: 1000 },
+        { id: "p2", name: "영희", createdAt: 1000 },
+      ],
+      sessions: [{
+        id: "s1",
+        name: "옛날 세션",
+        playerIds: ["p1", "p2"],
+        rounds: [{
+          id: "r1",
+          participantIds: ["p1", "p2"],
+          results: [
+            { playerId: "p1", rank: 1 },
+            { playerId: "p2", rank: 2 },
+          ],
+          createdAt: 1000,
+        }],
+        createdAt: 1000,
+      }],
+    });
+
+    // Update round without specifying revolution
+    useStore.getState().updateRound(
+      "s1",
+      "r1",
+      ["p1", "p2"],
+      [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }]
+    );
+
+    const round = useStore.getState().getRound("s1", "r1")!;
+    expect(round.revolution).toBe(false);
+    expect(round.results[0].rank).toBe(2);
+  });
+
+  it("scoreboard works with mixed revolution/undefined rounds", () => {
+    useStore.setState({
+      players: [
+        { id: "p1", name: "철수", createdAt: 1000 },
+        { id: "p2", name: "영희", createdAt: 1000 },
+      ],
+      sessions: [{
+        id: "s1",
+        name: "혼합 세션",
+        playerIds: ["p1", "p2"],
+        rounds: [
+          {
+            id: "r1",
+            participantIds: ["p1", "p2"],
+            results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
+            createdAt: 1000,
+            // revolution: undefined — old data
+          },
+          {
+            id: "r2",
+            participantIds: ["p1", "p2"],
+            results: [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }],
+            revolution: true, // new data
+            createdAt: 2000,
+          },
+          {
+            id: "r3",
+            participantIds: ["p1", "p2"],
+            results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
+            revolution: false, // explicit false
+            createdAt: 3000,
+          },
+        ],
+        createdAt: 1000,
+      }],
+    });
+
+    const session = useStore.getState().getSession("s1")!;
+    const board = buildScoreboard(session.playerIds, session.rounds);
+
+    // 철수: 0+1+0=1, 영희: 1+0+1=2
+    expect(board.find((e) => e.playerId === "p1")!.total).toBe(1);
+    expect(board.find((e) => e.playerId === "p2")!.total).toBe(2);
+
+    // Revolution flags are stored correctly
+    expect(session.rounds[0].revolution).toBeUndefined();
+    expect(session.rounds[1].revolution).toBe(true);
+    expect(session.rounds[2].revolution).toBe(false);
+  });
+
+  it("adds new round to session with old rounds", () => {
+    useStore.setState({
+      players: [
+        { id: "p1", name: "철수", createdAt: 1000 },
+        { id: "p2", name: "영희", createdAt: 1000 },
+      ],
+      sessions: [{
+        id: "s1",
+        name: "옛날 세션",
+        playerIds: ["p1", "p2"],
+        rounds: [{
+          id: "r1",
+          participantIds: ["p1", "p2"],
+          results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
+          createdAt: 1000,
+          // no revolution field
+        }],
+        createdAt: 1000,
+      }],
+    });
+
+    // Add a new round with revolution
+    useStore.getState().addRound(
+      "s1",
+      ["p1", "p2"],
+      [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }],
+      true
+    );
+
+    const session = useStore.getState().getSession("s1")!;
+    expect(session.rounds).toHaveLength(2);
+    expect(session.rounds[0].revolution).toBeUndefined(); // old round unchanged
+    expect(session.rounds[1].revolution).toBe(true); // new round has revolution
+
+    // Scoreboard works with mixed data
+    const board = buildScoreboard(session.playerIds, session.rounds);
+    expect(board.find((e) => e.playerId === "p1")!.total).toBe(1); // 0+1
+    expect(board.find((e) => e.playerId === "p2")!.total).toBe(1); // 1+0
+  });
+});
+
 describe("Integration: full game scenario", () => {
   it("simulates a 3-player, 3-round game with varying participation", () => {
     const state = useStore.getState();

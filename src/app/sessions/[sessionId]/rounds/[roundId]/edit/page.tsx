@@ -78,12 +78,12 @@ export default function EditRoundPage({
     });
   };
 
-  const handleSave = (orderedIds: string[]) => {
+  const handleSave = (orderedIds: string[], revolution: boolean) => {
     const results: RoundResult[] = orderedIds.map((playerId, index) => ({
       playerId,
       rank: index + 1,
     }));
-    updateRound(sessionId, roundId, orderedIds, results);
+    updateRound(sessionId, roundId, orderedIds, results, revolution);
     router.push(`/sessions/${sessionId}`);
   };
 
@@ -121,6 +121,7 @@ export default function EditRoundPage({
           <RankingList
             players={participantPlayers}
             initialOrder={initialOrder}
+            initialRevolution={round.revolution ?? false}
             onSave={handleSave}
             onBack={() => setStep("select")}
           />

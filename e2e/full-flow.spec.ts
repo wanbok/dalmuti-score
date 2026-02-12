@@ -68,7 +68,8 @@ test.describe("Full game flow", () => {
     await expect(page.getByRole("columnheader", { name: "R1" })).toBeVisible();
     await expect(page.getByText("합계")).toBeVisible();
 
-    // Verify round appears in history
+    // Verify round appears in history (switch to rounds tab first)
+    await page.getByRole("tab", { name: "라운드 이력" }).click();
     await expect(page.getByText(/철수 > 영희 > 민수/)).toBeVisible();
   });
 
@@ -155,7 +156,8 @@ test.describe("Round edit/delete", () => {
     // Verify round exists
     await expect(page.getByRole("columnheader", { name: "R1" })).toBeVisible();
 
-    // Delete round
+    // Switch to rounds tab, then delete round
+    await page.getByRole("tab", { name: "라운드 이력" }).click();
     page.on("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "삭제" }).click();
 

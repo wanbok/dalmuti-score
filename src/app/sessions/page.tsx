@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { SessionCard } from "@/components/session/SessionCard";
 import { SessionForm } from "@/components/session/SessionForm";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
 
@@ -21,8 +23,8 @@ export default function SessionsPage() {
         <AppHeader />
         <div className="p-4">
           <div className="animate-pulse space-y-4">
-            <div className="h-24 rounded-xl bg-gray-200" />
-            <div className="h-24 rounded-xl bg-gray-200" />
+            <div className="h-24 rounded-xl bg-skeleton" />
+            <div className="h-24 rounded-xl bg-skeleton" />
           </div>
         </div>
       </div>
@@ -33,9 +35,31 @@ export default function SessionsPage() {
     <div>
       <AppHeader
         action={
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            + 새 세션
-          </Button>
+          <div className="flex items-center gap-1">
+            <Link
+              href="/stats"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-text-secondary hover:bg-secondary transition-colors"
+              aria-label="통계"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 20V10M12 20V4M6 20v-6" />
+              </svg>
+            </Link>
+            <ThemeToggle />
+            <Button size="sm" onClick={() => setShowForm(true)}>
+              + 새 세션
+            </Button>
+          </div>
         }
       />
 

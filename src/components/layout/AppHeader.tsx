@@ -9,13 +9,13 @@ interface AppHeaderProps {
 
 export function AppHeader({ title = APP_NAME, backHref, action }: AppHeaderProps) {
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-10 border-b border-border bg-surface-overlay backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
         <div className="flex items-center gap-2">
           {backHref && (
             <Link
               href={backHref}
-              className="flex items-center justify-center rounded-lg p-2 -ml-2 min-h-[44px] min-w-[44px] text-gray-600 hover:bg-gray-100"
+              className="flex items-center justify-center rounded-lg p-2 -ml-2 min-h-[44px] min-w-[44px] text-text-secondary hover:bg-surface-sunken"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@ export function AppHeader({ title = APP_NAME, backHref, action }: AppHeaderProps
               </svg>
             </Link>
           )}
-          <h1 className="text-lg font-bold text-gray-900 truncate">{title}</h1>
+          <h1 className="text-lg font-bold text-text-primary truncate">{title}</h1>
         </div>
         {action && <div>{action}</div>}
       </div>
