@@ -25,12 +25,12 @@ export default function StatsPage() {
         <AppHeader backHref="/sessions" title="통계" />
         <div className="p-4 animate-pulse space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="h-20 rounded-xl bg-skeleton" />
-            <div className="h-20 rounded-xl bg-skeleton" />
-            <div className="h-20 rounded-xl bg-skeleton" />
-            <div className="h-20 rounded-xl bg-skeleton" />
+            <div className="h-20 rounded-2xl bg-skeleton" />
+            <div className="h-20 rounded-2xl bg-skeleton" />
+            <div className="h-20 rounded-2xl bg-skeleton" />
+            <div className="h-20 rounded-2xl bg-skeleton" />
           </div>
-          <div className="h-64 rounded-xl bg-skeleton" />
+          <div className="h-64 rounded-2xl bg-skeleton" />
         </div>
       </div>
     );
@@ -62,6 +62,7 @@ export default function StatsPage() {
         <EmptyState
           title="아직 데이터가 없습니다"
           description="세션을 만들고 라운드를 기록하세요"
+          icon="chart"
           action={
             <Link href="/sessions">
               <Button>세션 목록</Button>
@@ -108,9 +109,9 @@ export default function StatsPage() {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-4">
-      <p className="text-xs text-text-tertiary">{label}</p>
-      <p className="text-2xl font-bold text-text-primary mt-1">{value}</p>
+    <div className="rounded-2xl border border-border bg-surface-elevated p-4">
+      <p className="text-xs font-medium text-text-tertiary">{label}</p>
+      <p className="text-2xl font-bold text-text-primary mt-1 tabular-nums">{value}</p>
     </div>
   );
 }

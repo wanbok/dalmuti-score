@@ -133,8 +133,8 @@ test.describe("Session settings", () => {
     await page.getByPlaceholder("선수 이름").fill("영희");
     await page.getByRole("button", { name: "추가" }).click();
 
-    // Verify new player appears
-    await expect(page.getByText("영희")).toBeVisible();
+    // Verify new player appears in the roster
+    await expect(page.getByText("영희", { exact: true })).toBeVisible();
   });
 });
 
@@ -158,8 +158,11 @@ test.describe("Round edit/delete", () => {
 
     // Switch to rounds tab, then delete round
     await page.getByRole("tab", { name: "라운드 이력" }).click();
-    page.on("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "삭제" }).click();
+
+    // Confirm deletion in the custom dialog
+    await expect(page.getByText("이 라운드를 삭제하시겠습니까?")).toBeVisible();
+    await page.getByRole("button", { name: "삭제" }).last().click();
 
     // Scoreboard should be gone, empty state shown
     await expect(page.getByText("아직 라운드가 없습니다")).toBeVisible();

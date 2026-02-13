@@ -7,7 +7,7 @@ const CYCLE: ThemeMode[] = ["system", "light", "dark"];
 
 function SunIcon() {
   return (
-    <svg data-testid="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg data-testid="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="5" />
       <line x1="12" y1="1" x2="12" y2="3" />
       <line x1="12" y1="21" x2="12" y2="23" />
@@ -23,7 +23,7 @@ function SunIcon() {
 
 function MoonIcon() {
   return (
-    <svg data-testid="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg data-testid="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
@@ -31,7 +31,7 @@ function MoonIcon() {
 
 function AutoIcon() {
   return (
-    <svg data-testid="icon-auto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg data-testid="icon-auto" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       <path d="M12 2a10 10 0 0 1 0 20V2z" />
     </svg>
@@ -60,7 +60,7 @@ export function ThemeToggle() {
     <button
       onClick={handleClick}
       aria-label="테마 변경"
-      className="flex items-center justify-center rounded-lg p-2 min-h-[44px] min-w-[44px] text-text-secondary hover:bg-secondary"
+      className="flex items-center justify-center rounded-xl p-2 min-h-[44px] min-w-[44px] text-text-secondary hover:bg-secondary active:scale-[0.93] transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus/40"
     >
       <Icon />
     </button>

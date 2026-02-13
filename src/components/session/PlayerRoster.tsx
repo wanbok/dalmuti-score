@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useStore } from "@/store";
+import { useToast } from "@/components/ui/Toast";
 
 interface PlayerRosterProps {
   sessionId: string;
@@ -14,6 +15,7 @@ export function PlayerRoster({ sessionId }: PlayerRosterProps) {
   const players = useStore((s) => s.players);
   const addPlayerToSession = useStore((s) => s.addPlayerToSession);
   const removePlayerFromSession = useStore((s) => s.removePlayerFromSession);
+  const { toast } = useToast();
 
   const [newName, setNewName] = useState("");
 
@@ -29,18 +31,19 @@ export function PlayerRoster({ sessionId }: PlayerRosterProps) {
     if (!name) return;
     addPlayerToSession(sessionId, name);
     setNewName("");
+    toast(`${name} 선수가 추가되었습니다`);
   };
 
   return (
     <div className="flex flex-col gap-3">
       <h3 className="font-semibold text-text-primary">선수 목록</h3>
-      <ul className="flex flex-col gap-1">
+      <div className="rounded-xl border border-border overflow-hidden divide-y divide-border-light">
         {sessionPlayers.map((player) => (
-          <li
+          <div
             key={player.id}
-            className="flex items-center justify-between rounded-lg px-3 py-2 bg-surface-sunken"
+            className="flex items-center justify-between px-4 py-2.5 bg-surface-elevated"
           >
-            <span className="text-sm">{player.name}</span>
+            <span className="text-sm font-medium text-text-primary">{player.name}</span>
             <Button
               variant="ghost"
               size="sm"
@@ -49,9 +52,14 @@ export function PlayerRoster({ sessionId }: PlayerRosterProps) {
             >
               제거
             </Button>
-          </li>
+          </div>
         ))}
-      </ul>
+        {sessionPlayers.length === 0 && (
+          <div className="px-4 py-6 text-center text-sm text-text-tertiary bg-surface-elevated">
+            선수를 추가하세요
+          </div>
+        )}
+      </div>
       <form onSubmit={handleAdd} className="flex gap-2">
         <Input
           placeholder="선수 이름"

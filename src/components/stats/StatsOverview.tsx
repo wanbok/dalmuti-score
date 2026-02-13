@@ -63,9 +63,16 @@ export function StatsOverview({ stats, playerNames }: StatsOverviewProps) {
                 </td>
                 <td className="px-3 py-2 text-center">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-16 h-2 rounded-full bg-surface-sunken overflow-hidden">
+                    <div
+                      className="w-16 h-2 rounded-full bg-surface-sunken overflow-hidden"
+                      role="progressbar"
+                      aria-valuenow={Math.round(stat.winRate * 100)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${playerNames[stat.playerId] ?? "?"} 승률 ${Math.round(stat.winRate * 100)}%`}
+                    >
                       <div
-                        className="h-full rounded-full bg-primary"
+                        className="h-full rounded-full bg-primary transition-all duration-300"
                         style={{ width: `${Math.round(stat.winRate * 100)}%` }}
                       />
                     </div>
@@ -98,10 +105,10 @@ function SortButton({
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+      className={`px-3.5 py-1.5 min-h-[36px] text-xs font-medium rounded-full border transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-surface ${
         active
-          ? "bg-primary text-text-inverse border-primary"
-          : "bg-surface text-text-secondary border-border hover:bg-surface-sunken"
+          ? "bg-primary text-text-inverse border-primary shadow-sm"
+          : "bg-surface-elevated text-text-secondary border-border hover:bg-surface-sunken active:scale-[0.97]"
       }`}
     >
       {children}

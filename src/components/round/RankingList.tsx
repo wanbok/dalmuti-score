@@ -22,7 +22,6 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { SortablePlayerItem, PlayerItemOverlay } from "./SortablePlayerItem";
 import { Button } from "@/components/ui/Button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import type { Player } from "@/types";
 
 interface RankingListProps {
@@ -118,18 +117,37 @@ export function RankingList({
         </DragOverlay>
       </DndContext>
 
-      <Checkbox
-        id="revolution"
-        label="혁명 발생"
-        checked={revolution}
-        onChange={() => setRevolution((prev) => !prev)}
-      />
-
-      {revolution && (
-        <div className="rounded-lg border border-primary-light bg-primary-light px-4 py-3 text-sm text-primary-text">
-          혁명! 세금 면제 — 이번 라운드는 세금을 내지 않습니다.
+      {/* Revolution toggle — prominent card style */}
+      <button
+        type="button"
+        role="switch"
+        aria-checked={revolution}
+        aria-label="혁명 발생"
+        onClick={() => setRevolution((prev) => !prev)}
+        className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all duration-200 cursor-pointer ${
+          revolution
+            ? "border-accent bg-accent-light"
+            : "border-border bg-surface-elevated hover:border-border-focus/30"
+        }`}
+      >
+        <div
+          className={`flex h-5 w-9 items-center rounded-full p-0.5 transition-colors duration-200 ${
+            revolution ? "bg-accent justify-end" : "bg-border justify-start"
+          }`}
+        >
+          <div className="h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200" />
         </div>
-      )}
+        <div className="flex flex-col">
+          <span className={`text-sm font-semibold ${revolution ? "text-accent-text" : "text-text-primary"}`}>
+            혁명 발생
+          </span>
+          {revolution && (
+            <span className="text-xs text-accent-text/80">
+              혁명! 세금 면제 — 이번 라운드는 세금을 내지 않습니다.
+            </span>
+          )}
+        </div>
+      </button>
 
       <div className="flex gap-2">
         <Button variant="secondary" onClick={onBack} className="flex-1">

@@ -24,7 +24,7 @@ async function createSessionWithRounds(
 
   for (let i = 0; i < roundCount; i++) {
     // Click FAB
-    await page.locator("a.fixed").click();
+    await page.getByRole("link", { name: "라운드 추가" }).last().click();
     await expect(page.getByText("참가자 선택")).toBeVisible();
     await page.getByRole("button", { name: /명/ }).click();
     await expect(page.getByText("순위 입력")).toBeVisible();
@@ -70,7 +70,7 @@ test.describe("Statistics page", () => {
 
     // Check actual values
     // 1 session, 3 rounds, 2 players, avg 3.0 rounds/session
-    const statCards = page.locator(".rounded-xl.border");
+    const statCards = page.locator(".rounded-2xl.border");
     await expect(statCards.filter({ hasText: "총 세션" })).toContainText("1");
     await expect(statCards.filter({ hasText: "총 라운드" })).toContainText("3");
     await expect(statCards.filter({ hasText: "참여 선수" })).toContainText("2");
@@ -147,7 +147,7 @@ test.describe("Session stats tab", () => {
     await page.getByRole("tab", { name: "통계" }).click();
 
     // Total rounds should be 4
-    const totalRoundsCard = page.locator(".rounded-xl.border").filter({
+    const totalRoundsCard = page.locator(".rounded-2xl.border").filter({
       hasText: "총 라운드",
     });
     await expect(totalRoundsCard).toContainText("4");

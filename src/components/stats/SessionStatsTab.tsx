@@ -80,21 +80,21 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
     <div className="flex flex-col gap-4">
       {/* Chart section */}
       {session.rounds.length >= 2 ? (
-        <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <h3 className="font-semibold text-text-primary mb-3">
             라운드별 점수 추이
           </h3>
           <ScoreTrendChart session={session} players={players} />
         </div>
       ) : (
-        <div className="rounded-lg border border-border-light bg-surface-sunken px-4 py-3 text-sm text-text-secondary">
+        <div className="rounded-xl border border-border-light bg-surface-sunken px-4 py-3 text-sm text-text-secondary">
           2라운드 이상 진행하면 추이 차트가 표시됩니다
         </div>
       )}
 
       {/* Summary stats grid */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <p className="text-sm text-text-secondary">최다 1위</p>
           <p className="text-lg font-bold text-text-primary">
             {stats.mostWinsCount > 0
@@ -103,14 +103,14 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <p className="text-sm text-text-secondary">총 라운드</p>
           <p className="text-lg font-bold text-text-primary">
             {stats.totalRounds}
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <p className="text-sm text-text-secondary">최저 총점 (승자)</p>
           <p className="text-lg font-bold text-text-primary">
             {stats.winner
@@ -119,7 +119,7 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <p className="text-sm text-text-secondary">최고 총점 (패자)</p>
           <p className="text-lg font-bold text-text-primary">
             {stats.loser
@@ -129,7 +129,7 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
         </div>
 
         {stats.revolutionCount > 0 && (
-          <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="rounded-2xl border border-border bg-surface-elevated p-4">
             <p className="text-sm text-text-secondary">혁명 횟수</p>
             <p className="text-lg font-bold text-text-primary">
               {stats.revolutionCount}회

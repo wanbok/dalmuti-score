@@ -9,6 +9,30 @@ interface ScoreTableProps {
   players: Player[];
 }
 
+function ScoreCell({ score }: { score: number | null }) {
+  if (score === null) {
+    return <span className="text-text-tertiary">-</span>;
+  }
+  if (score === 0) {
+    return (
+      <span className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-score-zero/15 font-bold text-score-zero text-xs">
+        0
+      </span>
+    );
+  }
+  // Higher scores get slightly warmer tint
+  const intensity = Math.min(score / 8, 1);
+  const opacity = Math.round(intensity * 10 + 5);
+  return (
+    <span
+      className="tabular-nums"
+      style={{ color: `color-mix(in srgb, var(--color-danger) ${opacity}%, var(--color-text-secondary))` }}
+    >
+      {score}
+    </span>
+  );
+}
+
 export function ScoreTable({ session, players }: ScoreTableProps) {
   const playerMap = new Map(players.map((p) => [p.id, p]));
   const entries = buildScoreboard(session.playerIds, session.rounds);
@@ -17,36 +41,38 @@ export function ScoreTable({ session, players }: ScoreTableProps) {
   const sorted = [...entries].sort((a, b) => a.rank - b.rank);
 
   return (
-    <div className="overflow-x-auto -mx-4">
+    <div className="overflow-x-auto -mx-4 rounded-xl">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-surface-sunken">
-            <th className="sticky left-0 bg-surface-sunken px-4 py-2 text-left font-semibold text-text-secondary z-10">
+            <th className="sticky left-0 z-10 bg-surface-sunken px-4 py-3 text-left font-semibold text-text-secondary sticky-shadow-left">
               선수
             </th>
             {session.rounds.map((_, i) => (
               <th
                 key={i}
-                className="px-3 py-2 text-center font-semibold text-text-secondary whitespace-nowrap"
+                className="px-3 py-3 text-center font-semibold text-text-tertiary whitespace-nowrap text-xs"
               >
                 R{i + 1}
               </th>
             ))}
-            <th className="sticky right-0 bg-surface-sunken px-4 py-2 text-center font-semibold text-text-secondary z-10">
+            <th className="sticky right-0 z-10 bg-surface-sunken px-4 py-3 text-center font-semibold text-text-secondary sticky-shadow-right">
               합계
             </th>
           </tr>
         </thead>
         <tbody>
-          {sorted.map((entry) => {
+          {sorted.map((entry, rowIndex) => {
             const player = playerMap.get(entry.playerId);
             if (!player) return null;
             return (
               <tr
                 key={entry.playerId}
-                className="border-b border-border-light hover:bg-surface-sunken"
+                className={`border-b border-border-light transition-colors hover:bg-surface-sunken/50 ${
+                  rowIndex === 0 ? "bg-badge-gold-bg/20" : ""
+                }`}
               >
-                <td className="sticky left-0 bg-surface px-4 py-2 z-10">
+                <td className="sticky left-0 z-10 bg-surface px-4 py-2.5 sticky-shadow-left">
                   <div className="flex items-center gap-2">
                     <Badge variant={rankBadgeVariant(entry.rank)}>
                       {entry.rank}
@@ -59,18 +85,12 @@ export function ScoreTable({ session, players }: ScoreTableProps) {
                 {entry.scores.map((score, i) => (
                   <td
                     key={i}
-                    className="px-3 py-2 text-center text-text-secondary whitespace-nowrap"
+                    className="px-3 py-2.5 text-center whitespace-nowrap"
                   >
-                    {score === null ? (
-                      <span className="text-text-tertiary">-</span>
-                    ) : score === 0 ? (
-                      <span className="font-bold text-score-zero">0</span>
-                    ) : (
-                      score
-                    )}
+                    <ScoreCell score={score} />
                   </td>
                 ))}
-                <td className="sticky right-0 bg-surface px-4 py-2 text-center font-bold text-text-primary z-10">
+                <td className="sticky right-0 z-10 bg-surface px-4 py-2.5 text-center font-bold text-text-primary tabular-nums sticky-shadow-right">
                   {entry.total}
                 </td>
               </tr>

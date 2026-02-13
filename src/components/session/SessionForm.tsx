@@ -29,6 +29,11 @@ export function SessionForm() {
     router.push(`/sessions/${session.id}`);
   };
 
+  const playerCount = playerNames
+    .split(",")
+    .map((n) => n.trim())
+    .filter(Boolean).length;
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input
@@ -38,6 +43,7 @@ export function SessionForm() {
         value={sessionName}
         onChange={(e) => setSessionName(e.target.value)}
         required
+        autoFocus
       />
       <Input
         label="선수 이름 (쉼표 구분)"
@@ -45,6 +51,7 @@ export function SessionForm() {
         placeholder="예: 철수, 영희, 민수"
         value={playerNames}
         onChange={(e) => setPlayerNames(e.target.value)}
+        hint={playerCount > 0 ? `${playerCount}명 입력됨` : "나중에 설정에서 추가할 수도 있습니다"}
       />
       <Button type="submit" disabled={!sessionName.trim()}>
         세션 만들기

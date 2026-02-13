@@ -74,22 +74,51 @@ export function ScoreTrendChart({ session, players }: ScoreTrendChartProps) {
   }, [session.rounds]);
 
   return (
+    <div role="img" aria-label={`${players.map((p) => p.name).join(", ")}의 라운드별 누적 점수 추이 차트`}>
     <ResponsiveContainer width="100%" height={256}>
       <LineChart
         data={chartData}
         margin={{ top: 8, right: 8, bottom: 8, left: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} />
-        <Tooltip />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="var(--color-chart-grid)"
+          strokeOpacity={0.6}
+        />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 12, fill: "var(--color-chart-text)" }}
+          axisLine={{ stroke: "var(--color-chart-grid)" }}
+          tickLine={{ stroke: "var(--color-chart-grid)" }}
+        />
+        <YAxis
+          tick={{ fontSize: 12, fill: "var(--color-chart-text)" }}
+          axisLine={{ stroke: "var(--color-chart-grid)" }}
+          tickLine={{ stroke: "var(--color-chart-grid)" }}
+        />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "var(--color-chart-tooltip-bg)",
+            borderColor: "var(--color-chart-tooltip-border)",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}
+          labelStyle={{
+            color: "var(--color-text-primary)",
+            fontWeight: 600,
+          }}
+          itemStyle={{
+            color: "var(--color-text-secondary)",
+          }}
+        />
         <Legend iconType="circle" iconSize={8} />
         {revolutionRounds.map((r) => (
           <ReferenceLine
             key={r.index}
             x={`R${r.index + 1}`}
             strokeDasharray="3 3"
-            label="혁명"
+            stroke="var(--color-accent)"
+            label={{ value: "혁명", fill: "var(--color-accent-text)", fontSize: 11 }}
           />
         ))}
         {playerLines.map((line) => (
@@ -99,12 +128,13 @@ export function ScoreTrendChart({ session, players }: ScoreTrendChartProps) {
             stroke={line.color}
             strokeWidth={2}
             dot={{ r: 3 }}
-            activeDot={{ r: 5 }}
+            activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--color-surface)" }}
             type="monotone"
             connectNulls
           />
         ))}
       </LineChart>
     </ResponsiveContainer>
+    </div>
   );
 }

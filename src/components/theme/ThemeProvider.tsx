@@ -12,6 +12,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
 
     const root = document.documentElement;
+
+    // Add transitioning class for smooth theme switch
+    root.classList.add("theme-transitioning");
+
     root.classList.remove("light", "dark");
 
     if (theme === "light") {
@@ -20,6 +24,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.add("dark");
     }
     // 'system' → no class, CSS @media handles it
+
+    // Remove transitioning class after animation
+    const timer = setTimeout(() => {
+      root.classList.remove("theme-transitioning");
+    }, 350);
+
+    return () => clearTimeout(timer);
   }, [theme, hydrated]);
 
   return <>{children}</>;

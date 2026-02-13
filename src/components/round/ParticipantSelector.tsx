@@ -21,31 +21,32 @@ export function ParticipantSelector({
   onDeselectAll,
   onConfirm,
 }: ParticipantSelectorProps) {
+  const allSelected = selected.size === players.length;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-text-primary">참가자 선택</h3>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={onSelectAll}>
-            전체 선택
-          </Button>
-          <Button variant="ghost" size="sm" onClick={onDeselectAll}>
-            전체 해제
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={allSelected ? onDeselectAll : onSelectAll}
+        >
+          {allSelected ? "전체 해제" : "전체 선택"}
+        </Button>
       </div>
-      <ul className="flex flex-col gap-1">
+      <div className="rounded-xl border border-border bg-surface-elevated overflow-hidden divide-y divide-border-light">
         {players.map((player) => (
-          <li key={player.id}>
-            <Checkbox
-              id={`participant-${player.id}`}
-              label={player.name}
-              checked={selected.has(player.id)}
-              onChange={() => onToggle(player.id)}
-            />
-          </li>
+          <Checkbox
+            key={player.id}
+            id={`participant-${player.id}`}
+            label={player.name}
+            checked={selected.has(player.id)}
+            onChange={() => onToggle(player.id)}
+            className="rounded-none"
+          />
         ))}
-      </ul>
+      </div>
       <Button onClick={onConfirm} disabled={selected.size < 2}>
         순위 입력 ({selected.size}명)
       </Button>

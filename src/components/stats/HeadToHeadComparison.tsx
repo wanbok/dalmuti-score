@@ -27,7 +27,7 @@ export function HeadToHeadComparison({
           value={player1}
           onChange={(e) => setPlayer1(e.target.value)}
           aria-label="선수 1 선택"
-          className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm min-h-[44px]"
+          className="flex-1 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm min-h-[44px] text-text-primary cursor-pointer hover:border-border-focus/40 focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus/40 outline-none transition-all"
         >
           <option value="">선수 1</option>
           {playerIds
@@ -43,7 +43,7 @@ export function HeadToHeadComparison({
           value={player2}
           onChange={(e) => setPlayer2(e.target.value)}
           aria-label="선수 2 선택"
-          className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm min-h-[44px]"
+          className="flex-1 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-sm min-h-[44px] text-text-primary cursor-pointer hover:border-border-focus/40 focus:border-border-focus focus:ring-2 focus:ring-border-focus/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus/40 outline-none transition-all"
         >
           <option value="">선수 2</option>
           {playerIds
@@ -64,17 +64,17 @@ export function HeadToHeadComparison({
 
       {stats && (
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-surface-sunken p-3">
-            <p className="text-2xl font-bold text-primary">{stats.player1Wins}</p>
-            <p className="text-xs text-text-secondary">{playerNames[player1]}</p>
+          <div className="rounded-xl bg-primary-light p-3">
+            <p className="text-2xl font-bold text-primary-text tabular-nums">{stats.player1Wins}</p>
+            <p className="text-xs font-medium text-text-secondary mt-0.5">{playerNames[player1]}</p>
           </div>
-          <div className="rounded-lg bg-surface-sunken p-3">
-            <p className="text-2xl font-bold text-text-tertiary">{stats.draws}</p>
-            <p className="text-xs text-text-secondary">무승부</p>
+          <div className="rounded-xl bg-surface-sunken p-3">
+            <p className="text-2xl font-bold text-text-tertiary tabular-nums">{stats.draws}</p>
+            <p className="text-xs font-medium text-text-secondary mt-0.5">무승부</p>
           </div>
-          <div className="rounded-lg bg-surface-sunken p-3">
-            <p className="text-2xl font-bold text-danger">{stats.player2Wins}</p>
-            <p className="text-xs text-text-secondary">{playerNames[player2]}</p>
+          <div className="rounded-xl bg-danger-light p-3">
+            <p className="text-2xl font-bold text-danger-text tabular-nums">{stats.player2Wins}</p>
+            <p className="text-xs font-medium text-text-secondary mt-0.5">{playerNames[player2]}</p>
           </div>
         </div>
       )}

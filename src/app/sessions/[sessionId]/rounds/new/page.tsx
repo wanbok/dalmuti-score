@@ -6,9 +6,16 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { ParticipantSelector } from "@/components/round/ParticipantSelector";
 import { RankingList } from "@/components/round/RankingList";
 import { EmptyState } from "@/components/layout/EmptyState";
+import { StepIndicator } from "@/components/ui/StepIndicator";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
+import { useToast } from "@/components/ui/Toast";
 import type { RoundResult } from "@/types";
+
+const ROUND_STEPS = [
+  { label: "참가자" },
+  { label: "순위" },
+];
 
 export default function NewRoundPage({
   params,
@@ -21,6 +28,7 @@ export default function NewRoundPage({
   const players = useStore((s) => s.players);
   const addRound = useStore((s) => s.addRound);
   const router = useRouter();
+  const { toast } = useToast();
 
   const sessionPlayers = useMemo(() => {
     if (!session) return [];
@@ -77,6 +85,7 @@ export default function NewRoundPage({
       rank: index + 1,
     }));
     addRound(sessionId, orderedIds, results, revolution);
+    toast("라운드가 저장되었습니다");
     router.push(`/sessions/${sessionId}`);
   };
 
@@ -87,6 +96,10 @@ export default function NewRoundPage({
         title={`라운드 ${session.rounds.length + 1}`}
       />
       <div className="p-4">
+        <StepIndicator
+          steps={ROUND_STEPS}
+          currentStep={step === "select" ? 0 : 1}
+        />
         {step === "select" ? (
           <ParticipantSelector
             players={sessionPlayers}

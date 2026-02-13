@@ -7,9 +7,17 @@ import { ParticipantSelector } from "@/components/round/ParticipantSelector";
 import { RankingList } from "@/components/round/RankingList";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { StepIndicator } from "@/components/ui/StepIndicator";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
+import { useToast } from "@/components/ui/Toast";
 import type { RoundResult } from "@/types";
+
+const ROUND_STEPS = [
+  { label: "참가자" },
+  { label: "순위" },
+];
 
 export default function EditRoundPage({
   params,
@@ -24,6 +32,7 @@ export default function EditRoundPage({
   const updateRound = useStore((s) => s.updateRound);
   const deleteRound = useStore((s) => s.deleteRound);
   const router = useRouter();
+  const { toast } = useToast();
 
   const sessionPlayers = useMemo(() => {
     if (!session) return [];
@@ -35,6 +44,7 @@ export default function EditRoundPage({
     if (!round) return new Set();
     return new Set(round.participantIds);
   });
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Preserve existing order for participants that were in the original round
   const initialOrder = useMemo(() => {
@@ -84,14 +94,14 @@ export default function EditRoundPage({
       rank: index + 1,
     }));
     updateRound(sessionId, roundId, orderedIds, results, revolution);
+    toast("라운드가 수정되었습니다");
     router.push(`/sessions/${sessionId}`);
   };
 
   const handleDelete = () => {
-    if (confirm("이 라운드를 삭제하시겠습니까?")) {
-      deleteRound(sessionId, roundId);
-      router.push(`/sessions/${sessionId}`);
-    }
+    deleteRound(sessionId, roundId);
+    toast("라운드가 삭제되었습니다");
+    router.push(`/sessions/${sessionId}`);
   };
 
   return (
@@ -100,12 +110,16 @@ export default function EditRoundPage({
         backHref={`/sessions/${sessionId}`}
         title="라운드 수정"
         action={
-          <Button variant="danger" size="sm" onClick={handleDelete}>
+          <Button variant="danger" size="sm" onClick={() => setConfirmOpen(true)}>
             삭제
           </Button>
         }
       />
       <div className="p-4">
+        <StepIndicator
+          steps={ROUND_STEPS}
+          currentStep={step === "select" ? 0 : 1}
+        />
         {step === "select" ? (
           <ParticipantSelector
             players={sessionPlayers}
@@ -127,6 +141,15 @@ export default function EditRoundPage({
           />
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="라운드 삭제"
+        description="이 라운드를 삭제하시겠습니까?"
+        confirmLabel="삭제"
+      />
     </div>
   );
 }

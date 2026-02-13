@@ -23,7 +23,7 @@ async function createSession(page: Page, name: string, playerNames: string) {
 /** Add a round from the session page. Clicks FAB, confirms participants, optionally checks revolution. */
 async function addRound(page: Page, opts: { revolution?: boolean } = {}) {
   // Click FAB (+ button)
-  await page.locator("a.fixed").click();
+  await page.getByRole("link", { name: "라운드 추가" }).last().click();
   await expect(page.getByText("참가자 선택")).toBeVisible();
 
   // Confirm participants (all selected by default)
@@ -100,7 +100,7 @@ test.describe("Revolution feature", () => {
     await page.getByRole("tab", { name: "라운드 이력" }).click();
 
     // Should see R1 and R2 in history
-    const roundItems = page.locator(".rounded-lg.border.border-border.bg-surface");
+    const roundItems = page.locator(".rounded-xl.border.border-border.bg-surface-elevated");
     await expect(roundItems).toHaveCount(2);
 
     // R2 should have revolution badge

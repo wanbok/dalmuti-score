@@ -9,6 +9,46 @@ interface SortablePlayerItemProps {
   rank: number;
 }
 
+function RankBadge({ rank }: { rank: number }) {
+  const colors =
+    rank === 1
+      ? "bg-badge-gold-bg text-badge-gold-text border-badge-gold-border"
+      : rank === 2
+        ? "bg-badge-silver-bg text-badge-silver-text border-badge-silver-border"
+        : rank === 3
+          ? "bg-badge-bronze-bg text-badge-bronze-text border-badge-bronze-border"
+          : "bg-primary-light text-primary-text border-transparent";
+
+  return (
+    <span
+      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold border ${colors} transition-colors duration-150`}
+    >
+      {rank}
+    </span>
+  );
+}
+
+function GripIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="text-text-tertiary"
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="5" r="1.5" />
+      <circle cx="15" cy="5" r="1.5" />
+      <circle cx="9" cy="12" r="1.5" />
+      <circle cx="15" cy="12" r="1.5" />
+      <circle cx="9" cy="19" r="1.5" />
+      <circle cx="15" cy="19" r="1.5" />
+    </svg>
+  );
+}
+
 export function SortablePlayerItem({ id, name, rank }: SortablePlayerItemProps) {
   const {
     attributes,
@@ -29,33 +69,14 @@ export function SortablePlayerItem({ id, name, rank }: SortablePlayerItemProps) 
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 shadow-sm touch-none select-none"
+      className="flex items-center gap-3 rounded-xl border border-border bg-surface-elevated px-4 py-3 shadow-sm touch-none select-none cursor-grab active:cursor-grabbing transition-all duration-100"
       {...attributes}
       {...listeners}
     >
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-sm font-bold text-primary-text">
-        {rank}
-      </span>
-      <span className="font-medium text-text-primary">{name}</span>
-      <span className="ml-auto text-text-tertiary">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="9" cy="6" r="1" />
-          <circle cx="15" cy="6" r="1" />
-          <circle cx="9" cy="12" r="1" />
-          <circle cx="15" cy="12" r="1" />
-          <circle cx="9" cy="18" r="1" />
-          <circle cx="15" cy="18" r="1" />
-        </svg>
+      <RankBadge rank={rank} />
+      <span className="font-medium text-text-primary flex-1">{name}</span>
+      <span className="ml-auto shrink-0 opacity-60">
+        <GripIcon />
       </span>
     </div>
   );
@@ -68,11 +89,9 @@ interface PlayerItemOverlayProps {
 
 export function PlayerItemOverlay({ name, rank }: PlayerItemOverlayProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border-focus bg-surface px-4 py-3 shadow-lg">
-      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-sm font-bold text-primary-text">
-        {rank}
-      </span>
-      <span className="font-medium text-text-primary">{name}</span>
+    <div className="flex items-center gap-3 rounded-xl border-2 border-primary bg-surface-elevated px-4 py-3 shadow-xl shadow-primary/10">
+      <RankBadge rank={rank} />
+      <span className="font-medium text-text-primary flex-1">{name}</span>
     </div>
   );
 }

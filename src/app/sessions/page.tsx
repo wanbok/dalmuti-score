@@ -23,8 +23,8 @@ export default function SessionsPage() {
         <AppHeader />
         <div className="p-4">
           <div className="animate-pulse space-y-4">
-            <div className="h-24 rounded-xl bg-skeleton" />
-            <div className="h-24 rounded-xl bg-skeleton" />
+            <div className="h-24 rounded-2xl bg-skeleton" />
+            <div className="h-24 rounded-2xl bg-skeleton" />
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@ export default function SessionsPage() {
           <div className="flex items-center gap-1">
             <Link
               href="/stats"
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-text-secondary hover:bg-secondary transition-colors"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-text-secondary hover:bg-surface-sunken active:bg-secondary transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus/40"
               aria-label="통계"
             >
               <svg
@@ -51,6 +51,7 @@ export default function SessionsPage() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
                 <path d="M18 20V10M12 20V4M6 20v-6" />
               </svg>
@@ -68,6 +69,7 @@ export default function SessionsPage() {
           <EmptyState
             title="세션이 없습니다"
             description="새 세션을 만들어 점수를 기록하세요"
+            icon="cards"
             action={
               <Button onClick={() => setShowForm(true)}>첫 세션 만들기</Button>
             }
