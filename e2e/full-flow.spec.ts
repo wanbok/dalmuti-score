@@ -3,7 +3,10 @@ import { test, expect, type Page } from "@playwright/test";
 // Helper: clear localStorage and wait for hydration
 async function resetAndNavigate(page: Page, path: string) {
   await page.goto(path);
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem("dalmuti-score-storage", JSON.stringify({ state: { onboardingCompleted: true, onboardingStep: -1, players: [], sessions: [], theme: "system" }, version: 2 }));
+  });
   await page.reload();
   // Wait for client hydration (loading skeleton disappears)
   await page.waitForFunction(() => {

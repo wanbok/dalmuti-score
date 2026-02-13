@@ -34,7 +34,7 @@ export function Dialog({ open, onClose, title, children, actions }: DialogProps)
         if (e.target === dialogRef.current) onClose();
       }}
       aria-labelledby={titleId}
-      className="rounded-2xl p-0 bg-surface-elevated backdrop:bg-backdrop max-w-sm w-full shadow-xl border border-border focus:outline-none"
+      className="rounded-2xl p-0 m-auto bg-surface-elevated backdrop:bg-backdrop max-w-sm w-[calc(100%-2rem)] shadow-xl border border-border focus:outline-none"
     >
       <div className="p-6">
         <h2 id={titleId} className="text-lg font-bold text-text-primary mb-4">{title}</h2>

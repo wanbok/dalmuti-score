@@ -10,11 +10,18 @@ import { SessionStatsTab } from "@/components/stats/SessionStatsTab";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { CoachmarkOverlay } from "@/components/ui/Coachmark";
+import type { CoachmarkStep } from "@/components/ui/Coachmark";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
 import { useToast } from "@/components/ui/Toast";
 
 type Tab = "scoreboard" | "rounds" | "stats";
+
+const SESSION_DETAIL_STEPS: CoachmarkStep[] = [
+  { targetSelector: '[data-coachmark="tab-bar"]', message: "점수판, 라운드 이력, 통계를 탭으로 전환하세요", placement: "bottom" },
+  { targetSelector: '[data-coachmark="add-round"]', message: "여기를 눌러 라운드를 기록하세요", placement: "top" },
+];
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "scoreboard", label: "점수판" },
@@ -73,7 +80,7 @@ export default function SessionPage({
 
       {/* Tab bar */}
       {session.rounds.length > 0 && (
-        <div className="flex border-b border-border bg-surface" role="tablist" aria-label="세션 탭">
+        <div className="flex border-b border-border bg-surface" role="tablist" aria-label="세션 탭" data-coachmark="tab-bar">
           {TABS.map((tab) => (
             <button
               key={tab.key}
@@ -101,7 +108,7 @@ export default function SessionPage({
             description="첫 라운드를 시작하세요"
             icon="trophy"
             action={
-              <Link href={`/sessions/${sessionId}/rounds/new`}>
+              <Link href={`/sessions/${sessionId}/rounds/new`} data-coachmark="add-round">
                 <Button>라운드 추가</Button>
               </Link>
             }
@@ -192,6 +199,7 @@ export default function SessionPage({
             <Link
               href={`/sessions/${sessionId}/rounds/new`}
               aria-label="라운드 추가"
+              data-coachmark="add-round"
               className="pointer-events-auto absolute bottom-6 right-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-text-inverse shadow-lg shadow-primary/25 hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/30 active:bg-primary-active active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               <svg
@@ -226,6 +234,8 @@ export default function SessionPage({
         description="이 라운드를 삭제하시겠습니까?"
         confirmLabel="삭제"
       />
+
+      <CoachmarkOverlay steps={SESSION_DETAIL_STEPS} group="session-detail" />
     </div>
   );
 }

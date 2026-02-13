@@ -450,6 +450,23 @@ dialog::backdrop {
   }
 }
 
+/* Coachmark animation */
+@keyframes coachmark-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes coachmark-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Recharts tooltip theme override */
 .recharts-default-tooltip {
   background-color: var(--color-chart-tooltip-bg) !important;

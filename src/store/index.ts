@@ -30,6 +30,12 @@ interface AppState {
 
   // Theme
   setTheme: (theme: ThemeMode) => void;
+
+  // Onboarding
+  onboardingCompleted: boolean;
+  onboardingStep: number;
+  completeOnboarding: () => void;
+  setOnboardingStep: (step: number) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -164,16 +170,26 @@ export const useStore = create<AppState>()(
       },
 
       setTheme: (theme: ThemeMode) => set({ theme }),
+
+      // Onboarding
+      onboardingCompleted: false,
+      onboardingStep: 0,
+      completeOnboarding: () => set({ onboardingCompleted: true, onboardingStep: -1 }),
+      setOnboardingStep: (step: number) => set({ onboardingStep: step }),
     }),
     {
       name: "dalmuti-score-storage",
-      version: 1,
+      version: 2,
       migrate: (persistedState, version) => {
+        const state = persistedState as Record<string, unknown>;
         if (version === 0) {
-          const state = persistedState as Record<string, unknown>;
           if (!state.theme) {
             state.theme = "system";
           }
+        }
+        if (version < 2) {
+          state.onboardingCompleted = false;
+          state.onboardingStep = 0;
         }
         return persistedState as AppState;
       },
