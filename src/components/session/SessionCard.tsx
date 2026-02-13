@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Session } from "@/types";
 import { useStore } from "@/store";
+import { getAllRounds } from "@/lib/scoring";
 
 interface SessionCardProps {
   session: Session;
@@ -19,6 +20,8 @@ export function SessionCard({ session }: SessionCardProps) {
     session.playerIds.includes(p.id)
   );
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const totalRounds = getAllRounds(session).length;
 
   return (
     <>
@@ -35,7 +38,10 @@ export function SessionCard({ session }: SessionCardProps) {
             </div>
             <div className="flex items-center gap-1.5 ml-3 shrink-0">
               <span className="inline-flex items-center rounded-full bg-primary-light px-2.5 py-0.5 text-xs font-bold text-primary-text">
-                {session.rounds.length}R
+                {session.sets.length}세트
+              </span>
+              <span className="inline-flex items-center rounded-full bg-surface-sunken px-2.5 py-0.5 text-xs font-medium text-text-tertiary">
+                {totalRounds}R
               </span>
               <span className="inline-flex items-center rounded-full bg-surface-sunken px-2.5 py-0.5 text-xs font-medium text-text-tertiary">
                 {sessionPlayers.length}명
@@ -59,7 +65,7 @@ export function SessionCard({ session }: SessionCardProps) {
         onClose={() => setConfirmOpen(false)}
         onConfirm={() => deleteSession(session.id)}
         title="세션 삭제"
-        description="이 세션을 삭제하시겠습니까? 모든 라운드 데이터가 함께 삭제됩니다."
+        description="이 세션을 삭제하시겠습니까? 모든 세트와 라운드 데이터가 함께 삭제됩니다."
         confirmLabel="삭제"
       />
     </>

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ScoreTrendChart } from "../stats/ScoreTrendChart";
-import type { Session, Player } from "@/types";
+import type { Player, Round } from "@/types";
 
 // Mock recharts to avoid rendering real SVG charts in tests
 vi.mock("recharts", () => ({
@@ -31,21 +31,13 @@ const players: Player[] = [
   { id: "p2", name: "Bob", createdAt: 2 },
 ];
 
-function makeSession(rounds: Session["rounds"]): Session {
-  return {
-    id: "s1",
-    name: "Test Session",
-    playerIds: ["p1", "p2"],
-    rounds,
-    createdAt: 1,
-  };
-}
+const playerIds = ["p1", "p2"];
 
 function makeRound(
   id: string,
   results: { playerId: string; rank: number }[],
   revolution = false
-): Session["rounds"][0] {
+): Round {
   return {
     id,
     participantIds: results.map((r) => r.playerId),
@@ -57,7 +49,7 @@ function makeRound(
 
 describe("ScoreTrendChart", () => {
   it("renders a line for each player", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -66,15 +58,15 @@ describe("ScoreTrendChart", () => {
         { playerId: "p1", rank: 2 },
         { playerId: "p2", rank: 1 },
       ]),
-    ]);
-    render(<ScoreTrendChart session={session} players={players} />);
+    ];
+    render(<ScoreTrendChart playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByTestId("line-Alice")).toBeDefined();
     expect(screen.getByTestId("line-Bob")).toBeDefined();
   });
 
   it("renders chart structure (grid, axes, tooltip, legend)", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -83,8 +75,8 @@ describe("ScoreTrendChart", () => {
         { playerId: "p1", rank: 2 },
         { playerId: "p2", rank: 1 },
       ]),
-    ]);
-    render(<ScoreTrendChart session={session} players={players} />);
+    ];
+    render(<ScoreTrendChart playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByTestId("responsive-container")).toBeDefined();
     expect(screen.getByTestId("line-chart")).toBeDefined();
@@ -96,7 +88,7 @@ describe("ScoreTrendChart", () => {
   });
 
   it("generates correct number of data points", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -109,15 +101,15 @@ describe("ScoreTrendChart", () => {
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
       ]),
-    ]);
-    render(<ScoreTrendChart session={session} players={players} />);
+    ];
+    render(<ScoreTrendChart playerIds={playerIds} rounds={rounds} players={players} />);
 
     const chart = screen.getByTestId("line-chart");
     expect(chart.getAttribute("data-points")).toBe("3");
   });
 
   it("renders revolution reference lines", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -134,8 +126,8 @@ describe("ScoreTrendChart", () => {
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
       ]),
-    ]);
-    render(<ScoreTrendChart session={session} players={players} />);
+    ];
+    render(<ScoreTrendChart playerIds={playerIds} rounds={rounds} players={players} />);
 
     const refLines = screen.getAllByTestId("reference-line");
     expect(refLines.length).toBe(1);

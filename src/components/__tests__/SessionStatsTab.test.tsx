@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { SessionStatsTab } from "../stats/SessionStatsTab";
-import type { Session, Player } from "@/types";
+import type { Player, Round } from "@/types";
 
 // Mock ScoreTrendChart since it uses Recharts (heavy dependency)
 vi.mock("../stats/ScoreTrendChart", () => ({
-  ScoreTrendChart: ({ session, players }: { session: Session; players: Player[] }) => (
+  ScoreTrendChart: ({ rounds, players }: { playerIds: string[]; rounds: Round[]; players: Player[] }) => (
     <div data-testid="score-trend-chart">
-      Chart: {players.length} players, {session.rounds.length} rounds
+      Chart: {players.length} players, {rounds.length} rounds
     </div>
   ),
 }));
@@ -18,21 +18,13 @@ const players: Player[] = [
   { id: "p3", name: "Charlie", createdAt: 3 },
 ];
 
-function makeSession(rounds: Session["rounds"]): Session {
-  return {
-    id: "s1",
-    name: "Test Session",
-    playerIds: ["p1", "p2", "p3"],
-    rounds,
-    createdAt: 1,
-  };
-}
+const playerIds = ["p1", "p2", "p3"];
 
 function makeRound(
   id: string,
   results: { playerId: string; rank: number }[],
   revolution = false
-): Session["rounds"][0] {
+): Round {
   return {
     id,
     participantIds: results.map((r) => r.playerId),
@@ -44,13 +36,12 @@ function makeRound(
 
 describe("SessionStatsTab", () => {
   it("shows empty state when no rounds", () => {
-    const session = makeSession([]);
-    render(<SessionStatsTab session={session} players={players} />);
+    render(<SessionStatsTab playerIds={playerIds} rounds={[]} players={players} />);
     expect(screen.getByText("아직 라운드가 없습니다")).toBeDefined();
   });
 
   it("shows summary stats with rounds", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -61,8 +52,8 @@ describe("SessionStatsTab", () => {
         { playerId: "p2", rank: 1 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
-    render(<SessionStatsTab session={session} players={players} />);
+    ];
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     // Total rounds stat card
     expect(screen.getByText("총 라운드")).toBeDefined();
@@ -70,7 +61,7 @@ describe("SessionStatsTab", () => {
   });
 
   it("shows most 1st place finisher", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -86,15 +77,15 @@ describe("SessionStatsTab", () => {
         { playerId: "p2", rank: 1 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
-    render(<SessionStatsTab session={session} players={players} />);
+    ];
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByText("최다 1위")).toBeDefined();
     expect(screen.getByText("Alice (2회)")).toBeDefined();
   });
 
   it("shows winner (lowest total) and loser (highest total)", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -105,9 +96,9 @@ describe("SessionStatsTab", () => {
         { playerId: "p2", rank: 2 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
+    ];
     // Scores: p1=0+0=0, p2=1+1=2, p3=2+2=4
-    render(<SessionStatsTab session={session} players={players} />);
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByText("최저 총점 (승자)")).toBeDefined();
     expect(screen.getByText("Alice (0점)")).toBeDefined();
@@ -116,7 +107,7 @@ describe("SessionStatsTab", () => {
   });
 
   it("renders chart when 2+ rounds exist", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
@@ -127,21 +118,21 @@ describe("SessionStatsTab", () => {
         { playerId: "p2", rank: 1 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
-    render(<SessionStatsTab session={session} players={players} />);
+    ];
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByTestId("score-trend-chart")).toBeDefined();
   });
 
   it("shows hint instead of chart when only 1 round", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound("r1", [
         { playerId: "p1", rank: 1 },
         { playerId: "p2", rank: 2 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
-    render(<SessionStatsTab session={session} players={players} />);
+    ];
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.queryByTestId("score-trend-chart")).toBeNull();
     expect(
@@ -150,7 +141,7 @@ describe("SessionStatsTab", () => {
   });
 
   it("shows revolution count when revolutions occurred", () => {
-    const session = makeSession([
+    const rounds = [
       makeRound(
         "r1",
         [
@@ -165,8 +156,8 @@ describe("SessionStatsTab", () => {
         { playerId: "p2", rank: 1 },
         { playerId: "p3", rank: 3 },
       ]),
-    ]);
-    render(<SessionStatsTab session={session} players={players} />);
+    ];
+    render(<SessionStatsTab playerIds={playerIds} rounds={rounds} players={players} />);
 
     expect(screen.getByText("혁명 횟수")).toBeDefined();
     expect(screen.getByText("1회")).toBeDefined();

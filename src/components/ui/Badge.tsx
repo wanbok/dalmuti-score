@@ -1,4 +1,4 @@
-type Variant = "gold" | "silver" | "bronze" | "default";
+type Variant = "gold" | "silver" | "bronze" | "default" | "success";
 
 interface BadgeProps {
   variant?: Variant;
@@ -10,6 +10,7 @@ const variantClasses: Record<Variant, string> = {
   silver: "bg-badge-silver-bg text-badge-silver-text border-badge-silver-border",
   bronze: "bg-badge-bronze-bg text-badge-bronze-text border-badge-bronze-border",
   default: "bg-badge-default-bg text-badge-default-text border-badge-default-border",
+  success: "bg-badge-success-bg text-badge-success-text border-badge-success-border",
 };
 
 export function Badge({ variant = "default", children }: BadgeProps) {

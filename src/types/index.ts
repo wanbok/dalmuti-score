@@ -17,11 +17,18 @@ export interface Round {
   createdAt: number;
 }
 
+export interface GameSet {
+  id: string;
+  targetRounds: number;
+  rounds: Round[];
+  createdAt: number;
+}
+
 export interface Session {
   id: string;
   name: string;
   playerIds: string[];
-  rounds: Round[];
+  sets: GameSet[];
   createdAt: number;
 }
 

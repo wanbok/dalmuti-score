@@ -6,7 +6,7 @@ import {
   calculateAllPlayerRoundTrends,
   calculateHeadToHead,
 } from "../statistics";
-import type { Session, Round } from "@/types";
+import type { Session, Round, GameSet } from "@/types";
 
 // Helper to create rounds concisely
 function makeRound(
@@ -30,7 +30,10 @@ function makeSession(
   rounds: Round[],
   createdAt?: number
 ): Session {
-  return { id, name: `Session ${id}`, playerIds, rounds, createdAt: createdAt ?? Date.now() };
+  const sets: GameSet[] = rounds.length > 0
+    ? [{ id: `${id}-set1`, targetRounds: rounds.length, rounds, createdAt: createdAt ?? Date.now() }]
+    : [];
+  return { id, name: `Session ${id}`, playerIds, sets, createdAt: createdAt ?? Date.now() };
 }
 
 describe("calculatePlayerStatistics", () => {

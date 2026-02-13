@@ -9,6 +9,7 @@ import { StatsOverview } from "@/components/stats/StatsOverview";
 import { HeadToHeadComparison } from "@/components/stats/HeadToHeadComparison";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
+import { getAllRounds } from "@/lib/scoring";
 import {
   calculatePlayerStatistics,
   calculateHeadToHead,
@@ -37,7 +38,8 @@ export default function StatsPage() {
   }
 
   const totalSessions = sessions.length;
-  const totalRounds = sessions.reduce((sum, s) => sum + s.rounds.length, 0);
+  const totalRounds = sessions.reduce((sum, s) => sum + getAllRounds(s).length, 0);
+  const totalSets = sessions.reduce((sum, s) => sum + s.sets.length, 0);
   const uniquePlayerIds = new Set(sessions.flatMap((s) => s.playerIds));
   const avgRoundsPerSession =
     totalSessions > 0 ? (totalRounds / totalSessions).toFixed(1) : "0";
@@ -80,6 +82,7 @@ export default function StatsPage() {
         {/* StatCard Grid */}
         <div className="grid grid-cols-2 gap-3">
           <StatCard label="총 세션" value={totalSessions} />
+          <StatCard label="총 세트" value={totalSets} />
           <StatCard label="총 라운드" value={totalRounds} />
           <StatCard label="참여 선수" value={uniquePlayerIds.size} />
           <StatCard label="평균 라운드/세션" value={avgRoundsPerSession} />

@@ -6,7 +6,7 @@ import type {
   HeadToHeadStats,
   RoundTrendPoint,
 } from "@/types";
-import { calculateScore, buildScoreboard } from "@/lib/scoring";
+import { calculateScore, buildScoreboard, getAllRounds } from "@/lib/scoring";
 
 export function calculatePlayerStatistics(
   playerId: string,
@@ -21,7 +21,8 @@ export function calculatePlayerStatistics(
   const sessionSet = new Set<string>();
 
   for (const session of sessions) {
-    for (const round of session.rounds) {
+    const rounds = getAllRounds(session);
+    for (const round of rounds) {
       const result = round.results.find((r) => r.playerId === playerId);
       if (!result) continue;
 
@@ -56,7 +57,8 @@ export function calculateSessionTrend(
   const results: SessionStatistics[] = [];
 
   for (const session of sessions) {
-    const participatedRounds = session.rounds.filter((r) =>
+    const allRounds = getAllRounds(session);
+    const participatedRounds = allRounds.filter((r) =>
       r.results.some((res) => res.playerId === playerId)
     );
 
@@ -71,7 +73,7 @@ export function calculateSessionTrend(
       if (result.rank === 1) wins++;
     }
 
-    const scoreboard = buildScoreboard(session.playerIds, session.rounds);
+    const scoreboard = buildScoreboard(session.playerIds, allRounds);
     const entry = scoreboard.find((e) => e.playerId === playerId);
 
     results.push({
@@ -134,7 +136,8 @@ export function calculateHeadToHead(
   let totalFaceOffs = 0;
 
   for (const session of sessions) {
-    for (const round of session.rounds) {
+    const rounds = getAllRounds(session);
+    for (const round of rounds) {
       const r1 = round.results.find((r) => r.playerId === player1Id);
       const r2 = round.results.find((r) => r.playerId === player2Id);
 

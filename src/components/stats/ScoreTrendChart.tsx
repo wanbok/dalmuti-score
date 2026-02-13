@@ -13,7 +13,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { calculateAllPlayerRoundTrends } from "@/lib/statistics";
-import type { Session, Player } from "@/types";
+import type { Round, Player } from "@/types";
 
 const CHART_COLORS = [
   "var(--color-chart-1)",
@@ -31,23 +31,24 @@ const CHART_COLORS = [
 ];
 
 interface ScoreTrendChartProps {
-  session: Session;
+  playerIds: string[];
+  rounds: Round[];
   players: Player[];
 }
 
-export function ScoreTrendChart({ session, players }: ScoreTrendChartProps) {
+export function ScoreTrendChart({ playerIds, rounds, players }: ScoreTrendChartProps) {
   const playerMap = useMemo(
     () => new Map(players.map((p) => [p.id, p])),
     [players]
   );
 
   const trends = useMemo(
-    () => calculateAllPlayerRoundTrends(session.playerIds, session.rounds),
-    [session]
+    () => calculateAllPlayerRoundTrends(playerIds, rounds),
+    [playerIds, rounds]
   );
 
   const chartData = useMemo(() => {
-    return session.rounds.map((_, i) => {
+    return rounds.map((_, i) => {
       const point: Record<string, string | number | null> = {
         label: `R${i + 1}`,
       };
@@ -58,20 +59,20 @@ export function ScoreTrendChart({ session, players }: ScoreTrendChartProps) {
       }
       return point;
     });
-  }, [session.rounds, trends, playerMap]);
+  }, [rounds, trends, playerMap]);
 
   const playerLines = useMemo(() => {
-    return session.playerIds.map((id, i) => ({
+    return playerIds.map((id, i) => ({
       dataKey: playerMap.get(id)?.name ?? id,
       color: CHART_COLORS[i % CHART_COLORS.length],
     }));
-  }, [session.playerIds, playerMap]);
+  }, [playerIds, playerMap]);
 
   const revolutionRounds = useMemo(() => {
-    return session.rounds
+    return rounds
       .map((r, i) => ({ index: i, revolution: r.revolution }))
       .filter((r) => r.revolution);
-  }, [session.rounds]);
+  }, [rounds]);
 
   return (
     <div role="img" aria-label={`${players.map((p) => p.name).join(", ")}의 라운드별 누적 점수 추이 차트`}>

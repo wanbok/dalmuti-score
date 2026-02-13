@@ -6,8 +6,6 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { ParticipantSelector } from "@/components/round/ParticipantSelector";
 import { RankingList } from "@/components/round/RankingList";
 import { EmptyState } from "@/components/layout/EmptyState";
-import { Button } from "@/components/ui/Button";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { StepIndicator } from "@/components/ui/StepIndicator";
 import { useStore } from "@/store";
 import { useHydration } from "@/hooks/useHydration";
@@ -19,18 +17,17 @@ const ROUND_STEPS = [
   { label: "순위" },
 ];
 
-export default function EditRoundPage({
+export default function NewRoundPage({
   params,
 }: {
-  params: Promise<{ sessionId: string; roundId: string }>;
+  params: Promise<{ sessionId: string; setId: string }>;
 }) {
-  const { sessionId, roundId } = use(params);
+  const { sessionId, setId } = use(params);
   const hydrated = useHydration();
   const session = useStore((s) => s.getSession(sessionId));
-  const round = useStore((s) => s.getRound(sessionId, roundId));
+  const gameSet = useStore((s) => s.getSet(sessionId, setId));
   const players = useStore((s) => s.players);
-  const updateRound = useStore((s) => s.updateRound);
-  const deleteRound = useStore((s) => s.deleteRound);
+  const addRound = useStore((s) => s.addRound);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -41,35 +38,28 @@ export default function EditRoundPage({
 
   const [step, setStep] = useState<"select" | "rank">("select");
   const [selected, setSelected] = useState<Set<string>>(() => {
-    if (!round) return new Set();
-    return new Set(round.participantIds);
+    return new Set<string>();
   });
-  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // Preserve existing order for participants that were in the original round
-  const initialOrder = useMemo(() => {
-    if (!round) return [...selected];
-    const existingOrder = [...round.results]
-      .sort((a, b) => a.rank - b.rank)
-      .map((r) => r.playerId)
-      .filter((id) => selected.has(id));
-    const newIds = [...selected].filter((id) => !existingOrder.includes(id));
-    return [...existingOrder, ...newIds];
-  }, [round, selected]);
+  const [initialized, setInitialized] = useState(false);
+  if (hydrated && !initialized && sessionPlayers.length > 0) {
+    setInitialized(true);
+    setSelected(new Set(sessionPlayers.map((p) => p.id)));
+  }
 
   if (!hydrated) {
     return (
       <div>
-        <AppHeader backHref={`/sessions/${sessionId}`} title="로딩..." />
+        <AppHeader backHref={`/sessions/${sessionId}/sets/${setId}`} title="로딩..." />
       </div>
     );
   }
 
-  if (!session || !round) {
+  if (!session || !gameSet) {
     return (
       <div>
-        <AppHeader backHref={`/sessions/${sessionId}`} title="라운드 없음" />
-        <EmptyState title="라운드를 찾을 수 없습니다" />
+        <AppHeader backHref={`/sessions/${sessionId}`} title="세션 없음" />
+        <EmptyState title="세트를 찾을 수 없습니다" />
       </div>
     );
   }
@@ -93,27 +83,16 @@ export default function EditRoundPage({
       playerId,
       rank: index + 1,
     }));
-    updateRound(sessionId, roundId, orderedIds, results, revolution);
-    toast("라운드가 수정되었습니다");
-    router.push(`/sessions/${sessionId}`);
-  };
-
-  const handleDelete = () => {
-    deleteRound(sessionId, roundId);
-    toast("라운드가 삭제되었습니다");
-    router.push(`/sessions/${sessionId}`);
+    addRound(sessionId, setId, orderedIds, results, revolution);
+    toast("라운드가 저장되었습니다");
+    router.push(`/sessions/${sessionId}/sets/${setId}`);
   };
 
   return (
     <div>
       <AppHeader
-        backHref={`/sessions/${sessionId}`}
-        title="라운드 수정"
-        action={
-          <Button variant="danger" size="sm" onClick={() => setConfirmOpen(true)}>
-            삭제
-          </Button>
-        }
+        backHref={`/sessions/${sessionId}/sets/${setId}`}
+        title={`라운드 ${gameSet.rounds.length + 1}`}
       />
       <div className="p-4">
         <StepIndicator
@@ -134,22 +113,11 @@ export default function EditRoundPage({
         ) : (
           <RankingList
             players={participantPlayers}
-            initialOrder={initialOrder}
-            initialRevolution={round.revolution ?? false}
             onSave={handleSave}
             onBack={() => setStep("select")}
           />
         )}
       </div>
-
-      <ConfirmDialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={handleDelete}
-        title="라운드 삭제"
-        description="이 라운드를 삭제하시겠습니까?"
-        confirmLabel="삭제"
-      />
     </div>
   );
 }

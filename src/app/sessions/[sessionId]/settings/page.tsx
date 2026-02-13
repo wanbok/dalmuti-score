@@ -99,7 +99,7 @@ export default function SessionSettingsPage({
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
         title="세션 삭제"
-        description="이 세션을 삭제하시겠습니까? 모든 라운드 데이터가 삭제됩니다."
+        description="이 세션을 삭제하시겠습니까? 모든 세트와 라운드 데이터가 삭제됩니다."
         confirmLabel="삭제"
       />
     </div>

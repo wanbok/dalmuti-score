@@ -57,7 +57,7 @@ describe("Session CRUD", () => {
 
     expect(session.name).toBe("테스트");
     expect(session.playerIds).toEqual([p1.id, p2.id]);
-    expect(session.rounds).toEqual([]);
+    expect(session.sets).toEqual([]);
     expect(useStore.getState().sessions).toHaveLength(1);
   });
 
@@ -102,14 +102,53 @@ describe("Session CRUD", () => {
   });
 });
 
+describe("Set CRUD", () => {
+  it("createSet creates a set in the session", () => {
+    const session = useStore.getState().createSession("테스트", []);
+    const gameSet = useStore.getState().createSet(session.id, 4);
+
+    expect(gameSet).toBeDefined();
+    expect(gameSet!.targetRounds).toBe(4);
+    expect(gameSet!.rounds).toEqual([]);
+
+    const updated = useStore.getState().getSession(session.id)!;
+    expect(updated.sets).toHaveLength(1);
+  });
+
+  it("deleteSet removes the set from session", () => {
+    const session = useStore.getState().createSession("테스트", []);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
+    useStore.getState().deleteSet(session.id, gameSet.id);
+
+    const updated = useStore.getState().getSession(session.id)!;
+    expect(updated.sets).toHaveLength(0);
+  });
+
+  it("getSet returns the set", () => {
+    const session = useStore.getState().createSession("테스트", []);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
+
+    const found = useStore.getState().getSet(session.id, gameSet.id);
+    expect(found).toBeDefined();
+    expect(found!.id).toBe(gameSet.id);
+  });
+
+  it("getSet returns undefined for unknown set", () => {
+    const session = useStore.getState().createSession("테스트", []);
+    expect(useStore.getState().getSet(session.id, "unknown")).toBeUndefined();
+  });
+});
+
 describe("Round CRUD", () => {
-  it("addRound adds a round to the session", () => {
+  it("addRound adds a round to the set", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id, p2.id],
       [
         { playerId: p1.id, rank: 1 },
@@ -117,7 +156,7 @@ describe("Round CRUD", () => {
       ]
     );
 
-    const updated = useStore.getState().getSession(session.id)!;
+    const updated = useStore.getState().getSet(session.id, gameSet.id)!;
     expect(updated.rounds).toHaveLength(1);
     expect(updated.rounds[0].results).toHaveLength(2);
     expect(updated.rounds[0].results[0].rank).toBe(1);
@@ -127,9 +166,11 @@ describe("Round CRUD", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id, p2.id],
       [
         { playerId: p1.id, rank: 1 },
@@ -137,11 +178,12 @@ describe("Round CRUD", () => {
       ]
     );
 
-    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    const roundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
 
     // Swap ranks
     useStore.getState().updateRound(
       session.id,
+      gameSet.id,
       roundId,
       [p1.id, p2.id],
       [
@@ -155,14 +197,15 @@ describe("Round CRUD", () => {
     expect(round.results.find((r) => r.playerId === p2.id)!.rank).toBe(1);
   });
 
-  it("deleteRound removes the round from session", () => {
+  it("deleteRound removes the round from set", () => {
     const session = useStore.getState().createSession("테스트", []);
-    useStore.getState().addRound(session.id, [], []);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
+    useStore.getState().addRound(session.id, gameSet.id, [], []);
 
-    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
-    useStore.getState().deleteRound(session.id, roundId);
+    const roundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
+    useStore.getState().deleteRound(session.id, gameSet.id, roundId);
 
-    expect(useStore.getState().getSession(session.id)!.rounds).toHaveLength(0);
+    expect(useStore.getState().getSet(session.id, gameSet.id)!.rounds).toHaveLength(0);
   });
 
   it("getRound returns undefined for unknown round", () => {
@@ -196,46 +239,53 @@ describe("Revolution on rounds", () => {
   it("addRound stores revolution flag", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const session = useStore.getState().createSession("테스트", [p1.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }],
       true
     );
 
-    const round = useStore.getState().getSession(session.id)!.rounds[0];
+    const round = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0];
     expect(round.revolution).toBe(true);
   });
 
   it("addRound defaults revolution to false", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const session = useStore.getState().createSession("테스트", [p1.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }]
     );
 
-    const round = useStore.getState().getSession(session.id)!.rounds[0];
+    const round = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0];
     expect(round.revolution).toBe(false);
   });
 
   it("updateRound stores revolution flag", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const session = useStore.getState().createSession("테스트", [p1.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }]
     );
 
-    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    const roundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
 
     useStore.getState().updateRound(
       session.id,
+      gameSet.id,
       roundId,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }],
@@ -249,18 +299,21 @@ describe("Revolution on rounds", () => {
   it("updateRound defaults revolution to false", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const session = useStore.getState().createSession("테스트", [p1.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
       session.id,
+      gameSet.id,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }],
       true
     );
 
-    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    const roundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
 
     useStore.getState().updateRound(
       session.id,
+      gameSet.id,
       roundId,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }]
@@ -272,30 +325,31 @@ describe("Revolution on rounds", () => {
 });
 
 describe("Revolution chain and recalculation", () => {
-  it("stores multiple revolution rounds in same session", () => {
+  it("stores multiple revolution rounds in same set", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
       true
     );
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
     );
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
       true
     );
 
-    const rounds = useStore.getState().getSession(session.id)!.rounds;
+    const rounds = useStore.getState().getSet(session.id, gameSet.id)!.rounds;
     expect(rounds).toHaveLength(3);
     expect(rounds[0].revolution).toBe(true);
     expect(rounds[1].revolution).toBe(false);
@@ -305,22 +359,23 @@ describe("Revolution chain and recalculation", () => {
   it("toggles revolution flag via updateRound", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const session = useStore.getState().createSession("테스트", [p1.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id],
       [{ playerId: p1.id, rank: 1 }]
     );
 
-    const roundId = useStore.getState().getSession(session.id)!.rounds[0].id;
+    const roundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
     expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(false);
 
     // Toggle to true
-    useStore.getState().updateRound(session.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], true);
+    useStore.getState().updateRound(session.id, gameSet.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], true);
     expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(true);
 
     // Toggle back to false
-    useStore.getState().updateRound(session.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], false);
+    useStore.getState().updateRound(session.id, gameSet.id, roundId, [p1.id], [{ playerId: p1.id, rank: 1 }], false);
     expect(useStore.getState().getRound(session.id, roundId)!.revolution).toBe(false);
   });
 
@@ -328,23 +383,24 @@ describe("Revolution chain and recalculation", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
       true
     );
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
     );
 
-    const revolutionRoundId = useStore.getState().getSession(session.id)!.rounds[0].id;
-    useStore.getState().deleteRound(session.id, revolutionRoundId);
+    const revolutionRoundId = useStore.getState().getSet(session.id, gameSet.id)!.rounds[0].id;
+    useStore.getState().deleteRound(session.id, gameSet.id, revolutionRoundId);
 
-    const remaining = useStore.getState().getSession(session.id)!.rounds;
+    const remaining = useStore.getState().getSet(session.id, gameSet.id)!.rounds;
     expect(remaining).toHaveLength(1);
     expect(remaining[0].revolution).toBe(false);
     expect(remaining[0].results[0].rank).toBe(2);
@@ -354,31 +410,32 @@ describe("Revolution chain and recalculation", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }],
       true
     );
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
     );
 
-    const rounds = useStore.getState().getSession(session.id)!.rounds;
+    const rounds = useStore.getState().getSet(session.id, gameSet.id)!.rounds;
     const normalRoundId = rounds[1].id;
 
     // Update the non-revolution round's results
     useStore.getState().updateRound(
-      session.id,
+      session.id, gameSet.id,
       normalRoundId,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
     );
 
-    const updated = useStore.getState().getSession(session.id)!.rounds;
+    const updated = useStore.getState().getSet(session.id, gameSet.id)!.rounds;
     expect(updated[0].revolution).toBe(true); // revolution round unchanged
     expect(updated[1].revolution).toBe(false);
     expect(updated[1].results[0].rank).toBe(1); // results updated
@@ -388,40 +445,43 @@ describe("Revolution chain and recalculation", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     // Round 1: 철수 1st (score 0), 영희 2nd (score 1)
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
     );
     // Round 2: 영희 1st (score 0), 철수 2nd (score 1)
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p2.id, rank: 1 }, { playerId: p1.id, rank: 2 }]
     );
     // Round 3: 철수 1st (score 0), 영희 2nd (score 1)
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
     );
 
     // Before deletion: 철수=0+1+0=1, 영희=1+0+1=2
-    let updated = useStore.getState().getSession(session.id)!;
-    let board = buildScoreboard(updated.playerIds, updated.rounds);
+    let updatedSet = useStore.getState().getSet(session.id, gameSet.id)!;
+    let updatedSession = useStore.getState().getSession(session.id)!;
+    let board = buildScoreboard(updatedSession.playerIds, updatedSet.rounds);
     expect(board.find((e) => e.playerId === p1.id)!.total).toBe(1);
     expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
 
     // Delete round 2 (where 영희 won)
-    const round2Id = updated.rounds[1].id;
-    useStore.getState().deleteRound(session.id, round2Id);
+    const round2Id = updatedSet.rounds[1].id;
+    useStore.getState().deleteRound(session.id, gameSet.id, round2Id);
 
     // After deletion: 철수=0+0=0, 영희=1+1=2
-    updated = useStore.getState().getSession(session.id)!;
-    expect(updated.rounds).toHaveLength(2);
-    board = buildScoreboard(updated.playerIds, updated.rounds);
+    updatedSet = useStore.getState().getSet(session.id, gameSet.id)!;
+    updatedSession = useStore.getState().getSession(session.id)!;
+    expect(updatedSet.rounds).toHaveLength(2);
+    board = buildScoreboard(updatedSession.playerIds, updatedSet.rounds);
     expect(board.find((e) => e.playerId === p1.id)!.total).toBe(0);
     expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
   });
@@ -430,196 +490,43 @@ describe("Revolution chain and recalculation", () => {
     const p1 = useStore.getState().addPlayer("철수");
     const p2 = useStore.getState().addPlayer("영희");
     const session = useStore.getState().createSession("테스트", [p1.id, p2.id]);
+    const gameSet = useStore.getState().createSet(session.id, 4)!;
 
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
     );
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 1 }, { playerId: p2.id, rank: 2 }]
     );
 
     // Before: 철수=0+0=0, 영희=1+1=2
-    let updated = useStore.getState().getSession(session.id)!;
-    let board = buildScoreboard(updated.playerIds, updated.rounds);
+    let updatedSet = useStore.getState().getSet(session.id, gameSet.id)!;
+    let updatedSession = useStore.getState().getSession(session.id)!;
+    let board = buildScoreboard(updatedSession.playerIds, updatedSet.rounds);
     expect(board.find((e) => e.playerId === p1.id)!.total).toBe(0);
     expect(board.find((e) => e.playerId === p2.id)!.total).toBe(2);
 
     // Swap ranks in round 2
-    const round2Id = updated.rounds[1].id;
+    const round2Id = updatedSet.rounds[1].id;
     useStore.getState().updateRound(
-      session.id,
+      session.id, gameSet.id,
       round2Id,
       [p1.id, p2.id],
       [{ playerId: p1.id, rank: 2 }, { playerId: p2.id, rank: 1 }]
     );
 
     // After: 철수=0+1=1, 영희=1+0=1 → tied
-    updated = useStore.getState().getSession(session.id)!;
-    board = buildScoreboard(updated.playerIds, updated.rounds);
+    updatedSet = useStore.getState().getSet(session.id, gameSet.id)!;
+    updatedSession = useStore.getState().getSession(session.id)!;
+    board = buildScoreboard(updatedSession.playerIds, updatedSet.rounds);
     expect(board.find((e) => e.playerId === p1.id)!.total).toBe(1);
     expect(board.find((e) => e.playerId === p2.id)!.total).toBe(1);
     expect(board.find((e) => e.playerId === p1.id)!.rank).toBe(1);
     expect(board.find((e) => e.playerId === p2.id)!.rank).toBe(1);
-  });
-});
-
-describe("Backward compatibility — existing data without revolution", () => {
-  it("handles rounds with undefined revolution field in store operations", () => {
-    // Simulate old data loaded from localStorage (no revolution field)
-    useStore.setState({
-      players: [{ id: "p1", name: "철수", createdAt: 1000 }],
-      sessions: [{
-        id: "s1",
-        name: "옛날 세션",
-        playerIds: ["p1"],
-        rounds: [{
-          id: "r1",
-          participantIds: ["p1"],
-          results: [{ playerId: "p1", rank: 1 }],
-          createdAt: 1000,
-          // revolution: undefined — old data
-        }],
-        createdAt: 1000,
-      }],
-    });
-
-    // Store operations should still work
-    const session = useStore.getState().getSession("s1")!;
-    expect(session.rounds).toHaveLength(1);
-    expect(session.rounds[0].revolution).toBeUndefined();
-
-    const round = useStore.getState().getRound("s1", "r1")!;
-    expect(round.results[0].rank).toBe(1);
-  });
-
-  it("updating old round without revolution defaults to false", () => {
-    useStore.setState({
-      players: [
-        { id: "p1", name: "철수", createdAt: 1000 },
-        { id: "p2", name: "영희", createdAt: 1000 },
-      ],
-      sessions: [{
-        id: "s1",
-        name: "옛날 세션",
-        playerIds: ["p1", "p2"],
-        rounds: [{
-          id: "r1",
-          participantIds: ["p1", "p2"],
-          results: [
-            { playerId: "p1", rank: 1 },
-            { playerId: "p2", rank: 2 },
-          ],
-          createdAt: 1000,
-        }],
-        createdAt: 1000,
-      }],
-    });
-
-    // Update round without specifying revolution
-    useStore.getState().updateRound(
-      "s1",
-      "r1",
-      ["p1", "p2"],
-      [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }]
-    );
-
-    const round = useStore.getState().getRound("s1", "r1")!;
-    expect(round.revolution).toBe(false);
-    expect(round.results[0].rank).toBe(2);
-  });
-
-  it("scoreboard works with mixed revolution/undefined rounds", () => {
-    useStore.setState({
-      players: [
-        { id: "p1", name: "철수", createdAt: 1000 },
-        { id: "p2", name: "영희", createdAt: 1000 },
-      ],
-      sessions: [{
-        id: "s1",
-        name: "혼합 세션",
-        playerIds: ["p1", "p2"],
-        rounds: [
-          {
-            id: "r1",
-            participantIds: ["p1", "p2"],
-            results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
-            createdAt: 1000,
-            // revolution: undefined — old data
-          },
-          {
-            id: "r2",
-            participantIds: ["p1", "p2"],
-            results: [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }],
-            revolution: true, // new data
-            createdAt: 2000,
-          },
-          {
-            id: "r3",
-            participantIds: ["p1", "p2"],
-            results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
-            revolution: false, // explicit false
-            createdAt: 3000,
-          },
-        ],
-        createdAt: 1000,
-      }],
-    });
-
-    const session = useStore.getState().getSession("s1")!;
-    const board = buildScoreboard(session.playerIds, session.rounds);
-
-    // 철수: 0+1+0=1, 영희: 1+0+1=2
-    expect(board.find((e) => e.playerId === "p1")!.total).toBe(1);
-    expect(board.find((e) => e.playerId === "p2")!.total).toBe(2);
-
-    // Revolution flags are stored correctly
-    expect(session.rounds[0].revolution).toBeUndefined();
-    expect(session.rounds[1].revolution).toBe(true);
-    expect(session.rounds[2].revolution).toBe(false);
-  });
-
-  it("adds new round to session with old rounds", () => {
-    useStore.setState({
-      players: [
-        { id: "p1", name: "철수", createdAt: 1000 },
-        { id: "p2", name: "영희", createdAt: 1000 },
-      ],
-      sessions: [{
-        id: "s1",
-        name: "옛날 세션",
-        playerIds: ["p1", "p2"],
-        rounds: [{
-          id: "r1",
-          participantIds: ["p1", "p2"],
-          results: [{ playerId: "p1", rank: 1 }, { playerId: "p2", rank: 2 }],
-          createdAt: 1000,
-          // no revolution field
-        }],
-        createdAt: 1000,
-      }],
-    });
-
-    // Add a new round with revolution
-    useStore.getState().addRound(
-      "s1",
-      ["p1", "p2"],
-      [{ playerId: "p1", rank: 2 }, { playerId: "p2", rank: 1 }],
-      true
-    );
-
-    const session = useStore.getState().getSession("s1")!;
-    expect(session.rounds).toHaveLength(2);
-    expect(session.rounds[0].revolution).toBeUndefined(); // old round unchanged
-    expect(session.rounds[1].revolution).toBe(true); // new round has revolution
-
-    // Scoreboard works with mixed data
-    const board = buildScoreboard(session.playerIds, session.rounds);
-    expect(board.find((e) => e.playerId === "p1")!.total).toBe(1); // 0+1
-    expect(board.find((e) => e.playerId === "p2")!.total).toBe(1); // 1+0
   });
 });
 
@@ -630,10 +537,11 @@ describe("Integration: full game scenario", () => {
     const p2 = state.addPlayer("영희");
     const p3 = state.addPlayer("민수");
     const session = useStore.getState().createSession("금요게임", [p1.id, p2.id, p3.id]);
+    const gameSet = useStore.getState().createSet(session.id, 3)!;
 
     // Round 1: all 3 play — 철수 1st, 영희 2nd, 민수 3rd
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id, p3.id],
       [
         { playerId: p1.id, rank: 1 },
@@ -644,7 +552,7 @@ describe("Integration: full game scenario", () => {
 
     // Round 2: only 철수 and 민수 play — 민수 1st, 철수 2nd
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p3.id],
       [
         { playerId: p3.id, rank: 1 },
@@ -654,7 +562,7 @@ describe("Integration: full game scenario", () => {
 
     // Round 3: all play — 영희 1st, 민수 2nd, 철수 3rd
     useStore.getState().addRound(
-      session.id,
+      session.id, gameSet.id,
       [p1.id, p2.id, p3.id],
       [
         { playerId: p2.id, rank: 1 },
@@ -663,11 +571,12 @@ describe("Integration: full game scenario", () => {
       ]
     );
 
-    const updated = useStore.getState().getSession(session.id)!;
-    expect(updated.rounds).toHaveLength(3);
+    const updatedSet = useStore.getState().getSet(session.id, gameSet.id)!;
+    const updatedSession = useStore.getState().getSession(session.id)!;
+    expect(updatedSet.rounds).toHaveLength(3);
 
     // Verify score calculation via scoring lib
-    const board = buildScoreboard(updated.playerIds, updated.rounds);
+    const board = buildScoreboard(updatedSession.playerIds, updatedSet.rounds);
 
     const 철수 = board.find((e) => e.playerId === p1.id)!;
     const 영희 = board.find((e) => e.playerId === p2.id)!;

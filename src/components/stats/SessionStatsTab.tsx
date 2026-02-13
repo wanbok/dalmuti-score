@@ -3,30 +3,31 @@
 import { useMemo } from "react";
 import { ScoreTrendChart } from "./ScoreTrendChart";
 import { buildScoreboard } from "@/lib/scoring";
-import type { Session, Player } from "@/types";
+import type { Round, Player } from "@/types";
 
 interface SessionStatsTabProps {
-  session: Session;
+  playerIds: string[];
+  rounds: Round[];
   players: Player[];
 }
 
-export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
+export function SessionStatsTab({ playerIds, rounds, players }: SessionStatsTabProps) {
   const playerMap = useMemo(
     () => new Map(players.map((p) => [p.id, p])),
     [players]
   );
 
   const scoreboard = useMemo(
-    () => buildScoreboard(session.playerIds, session.rounds),
-    [session]
+    () => buildScoreboard(playerIds, rounds),
+    [playerIds, rounds]
   );
 
   const stats = useMemo(() => {
-    if (session.rounds.length === 0) return null;
+    if (rounds.length === 0) return null;
 
     // Most 1st place finishes
     const winCounts = new Map<string, number>();
-    for (const round of session.rounds) {
+    for (const round of rounds) {
       for (const result of round.results) {
         if (result.rank === 1) {
           winCounts.set(
@@ -52,7 +53,7 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
     const loser = sorted[sorted.length - 1];
 
     // Revolution count
-    const revolutionCount = session.rounds.filter(
+    const revolutionCount = rounds.filter(
       (r) => r.revolution === true
     ).length;
 
@@ -61,12 +62,12 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
       mostWinsCount,
       winner,
       loser,
-      totalRounds: session.rounds.length,
+      totalRounds: rounds.length,
       revolutionCount,
     };
-  }, [session, scoreboard]);
+  }, [rounds, scoreboard]);
 
-  if (session.rounds.length === 0) {
+  if (rounds.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-text-secondary">
         <p className="text-lg font-medium">아직 라운드가 없습니다</p>
@@ -79,12 +80,12 @@ export function SessionStatsTab({ session, players }: SessionStatsTabProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Chart section */}
-      {session.rounds.length >= 2 ? (
+      {rounds.length >= 2 ? (
         <div className="rounded-2xl border border-border bg-surface-elevated p-4">
           <h3 className="font-semibold text-text-primary mb-3">
             라운드별 점수 추이
           </h3>
-          <ScoreTrendChart session={session} players={players} />
+          <ScoreTrendChart playerIds={playerIds} rounds={rounds} players={players} />
         </div>
       ) : (
         <div className="rounded-xl border border-border-light bg-surface-sunken px-4 py-3 text-sm text-text-secondary">

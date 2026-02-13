@@ -4,7 +4,7 @@ async function resetAndNavigate(page: Page, path: string) {
   await page.goto(path);
   await page.evaluate(() => {
     localStorage.clear();
-    localStorage.setItem("dalmuti-score-storage", JSON.stringify({ state: { onboardingCompleted: true, onboardingStep: -1, players: [], sessions: [], theme: "system" }, version: 2 }));
+    localStorage.setItem("dalmuti-score-storage", JSON.stringify({ state: { onboardingCompleted: true, onboardingStep: -1, players: [], sessions: [], theme: "system" }, version: 3 }));
   });
   await page.reload();
   await page.waitForFunction(

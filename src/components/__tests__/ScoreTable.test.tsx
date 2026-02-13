@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ScoreTable } from "../scoreboard/ScoreTable";
-import type { Player, Session } from "@/types";
+import type { Player, Round } from "@/types";
 
 const players: Player[] = [
   { id: "a", name: "철수", createdAt: 1 },
@@ -11,131 +11,101 @@ const players: Player[] = [
 
 describe("ScoreTable", () => {
   it("renders player names", () => {
-    const session: Session = {
-      id: "s1",
-      name: "테스트",
-      playerIds: ["a", "b", "c"],
-      rounds: [
-        {
-          id: "r1",
-          participantIds: ["a", "b", "c"],
-          results: [
-            { playerId: "a", rank: 1 },
-            { playerId: "b", rank: 2 },
-            { playerId: "c", rank: 3 },
-          ],
-          createdAt: 1,
-        },
-      ],
-      createdAt: 1,
-    };
+    const rounds: Round[] = [
+      {
+        id: "r1",
+        participantIds: ["a", "b", "c"],
+        results: [
+          { playerId: "a", rank: 1 },
+          { playerId: "b", rank: 2 },
+          { playerId: "c", rank: 3 },
+        ],
+        createdAt: 1,
+      },
+    ];
 
-    render(<ScoreTable session={session} players={players} />);
+    render(<ScoreTable playerIds={["a", "b", "c"]} rounds={rounds} players={players} />);
     expect(screen.getByText("철수")).toBeInTheDocument();
     expect(screen.getByText("영희")).toBeInTheDocument();
     expect(screen.getByText("민수")).toBeInTheDocument();
   });
 
   it("renders round column headers", () => {
-    const session: Session = {
-      id: "s1",
-      name: "테스트",
-      playerIds: ["a", "b"],
-      rounds: [
-        {
-          id: "r1",
-          participantIds: ["a", "b"],
-          results: [
-            { playerId: "a", rank: 1 },
-            { playerId: "b", rank: 2 },
-          ],
-          createdAt: 1,
-        },
-        {
-          id: "r2",
-          participantIds: ["a", "b"],
-          results: [
-            { playerId: "a", rank: 2 },
-            { playerId: "b", rank: 1 },
-          ],
-          createdAt: 2,
-        },
-      ],
-      createdAt: 1,
-    };
+    const rounds: Round[] = [
+      {
+        id: "r1",
+        participantIds: ["a", "b"],
+        results: [
+          { playerId: "a", rank: 1 },
+          { playerId: "b", rank: 2 },
+        ],
+        createdAt: 1,
+      },
+      {
+        id: "r2",
+        participantIds: ["a", "b"],
+        results: [
+          { playerId: "a", rank: 2 },
+          { playerId: "b", rank: 1 },
+        ],
+        createdAt: 2,
+      },
+    ];
 
-    render(<ScoreTable session={session} players={players} />);
+    render(<ScoreTable playerIds={["a", "b"]} rounds={rounds} players={players} />);
     expect(screen.getByText("R1")).toBeInTheDocument();
     expect(screen.getByText("R2")).toBeInTheDocument();
   });
 
   it("shows '-' for absent players", () => {
-    const session: Session = {
-      id: "s1",
-      name: "테스트",
-      playerIds: ["a", "b", "c"],
-      rounds: [
-        {
-          id: "r1",
-          participantIds: ["a", "b"],
-          results: [
-            { playerId: "a", rank: 1 },
-            { playerId: "b", rank: 2 },
-          ],
-          createdAt: 1,
-        },
-      ],
-      createdAt: 1,
-    };
+    const rounds: Round[] = [
+      {
+        id: "r1",
+        participantIds: ["a", "b"],
+        results: [
+          { playerId: "a", rank: 1 },
+          { playerId: "b", rank: 2 },
+        ],
+        createdAt: 1,
+      },
+    ];
 
-    render(<ScoreTable session={session} players={players} />);
+    render(<ScoreTable playerIds={["a", "b", "c"]} rounds={rounds} players={players} />);
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
   it("shows totals", () => {
-    const session: Session = {
-      id: "s1",
-      name: "테스트",
-      playerIds: ["a", "b"],
-      rounds: [
-        {
-          id: "r1",
-          participantIds: ["a", "b"],
-          results: [
-            { playerId: "a", rank: 1 },
-            { playerId: "b", rank: 2 },
-          ],
-          createdAt: 1,
-        },
-      ],
-      createdAt: 1,
-    };
+    const rounds: Round[] = [
+      {
+        id: "r1",
+        participantIds: ["a", "b"],
+        results: [
+          { playerId: "a", rank: 1 },
+          { playerId: "b", rank: 2 },
+        ],
+        createdAt: 1,
+      },
+    ];
 
-    render(<ScoreTable session={session} players={players} />);
+    render(<ScoreTable playerIds={["a", "b"]} rounds={rounds} players={players} />);
     // a total=0, b total=1
     expect(screen.getByText("합계")).toBeInTheDocument();
   });
 
   it("sorts players by rank (lowest total first)", () => {
-    const session: Session = {
-      id: "s1",
-      name: "테스트",
-      playerIds: ["a", "b"],
-      rounds: [
-        {
-          id: "r1",
-          participantIds: ["a", "b"],
-          results: [
-            { playerId: "a", rank: 2 },
-            { playerId: "b", rank: 1 },
-          ],
-          createdAt: 1,
-        },
-      ],
-      createdAt: 1,
-    };
+    const rounds: Round[] = [
+      {
+        id: "r1",
+        participantIds: ["a", "b"],
+        results: [
+          { playerId: "a", rank: 2 },
+          { playerId: "b", rank: 1 },
+        ],
+        createdAt: 1,
+      },
+    ];
 
-    render(<ScoreTable session={session} players={players} />);
+    render(<ScoreTable playerIds={["a", "b"]} rounds={rounds} players={players} />);
     const rows = screen.getAllByRole("row");
     // header row + 2 data rows; first data row should be 영희 (rank 1)
     expect(rows[1]).toHaveTextContent("영희");

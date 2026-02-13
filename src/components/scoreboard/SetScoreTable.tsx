@@ -1,12 +1,12 @@
 "use client";
 
 import { Badge, rankBadgeVariant } from "@/components/ui/Badge";
-import { buildScoreboard } from "@/lib/scoring";
-import type { Player, Round } from "@/types";
+import { buildSetScoreboard } from "@/lib/scoring";
+import type { Player, GameSet } from "@/types";
 
-interface ScoreTableProps {
+interface SetScoreTableProps {
   playerIds: string[];
-  rounds: Round[];
+  sets: GameSet[];
   players: Player[];
 }
 
@@ -21,7 +21,6 @@ function ScoreCell({ score }: { score: number | null }) {
       </span>
     );
   }
-  // Higher scores get slightly warmer tint
   const intensity = Math.min(score / 8, 1);
   const opacity = Math.round(intensity * 10 + 5);
   return (
@@ -34,11 +33,10 @@ function ScoreCell({ score }: { score: number | null }) {
   );
 }
 
-export function ScoreTable({ playerIds, rounds, players }: ScoreTableProps) {
+export function SetScoreTable({ playerIds, sets, players }: SetScoreTableProps) {
   const playerMap = new Map(players.map((p) => [p.id, p]));
-  const entries = buildScoreboard(playerIds, rounds);
+  const entries = buildSetScoreboard(playerIds, sets);
 
-  // Sort by rank ascending
   const sorted = [...entries].sort((a, b) => a.rank - b.rank);
 
   return (
@@ -49,12 +47,12 @@ export function ScoreTable({ playerIds, rounds, players }: ScoreTableProps) {
             <th className="sticky left-0 z-10 bg-surface-sunken px-4 py-3 text-left font-semibold text-text-secondary sticky-shadow-left">
               선수
             </th>
-            {rounds.map((_, i) => (
+            {sets.map((_, i) => (
               <th
                 key={i}
                 className="px-3 py-3 text-center font-semibold text-text-tertiary whitespace-nowrap text-xs"
               >
-                R{i + 1}
+                S{i + 1}
               </th>
             ))}
             <th className="sticky right-0 z-10 bg-surface-sunken px-4 py-3 text-center font-semibold text-text-secondary sticky-shadow-right">

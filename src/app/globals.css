@@ -64,6 +64,11 @@
   --color-badge-default-text: #57534e;
   --color-badge-default-border: #e7e5e4;
 
+  /* Badge — Success */
+  --color-badge-success-bg: #ecfdf5;
+  --color-badge-success-text: #059669;
+  --color-badge-success-border: #6ee7b7;
+
   /* Score highlight */
   --color-score-zero: #6366f1;
 
@@ -167,6 +172,11 @@
     --color-badge-default-text: #a8a29e;
     --color-badge-default-border: #3b3b5e;
 
+    /* Badge — Success */
+    --color-badge-success-bg: #064e3b;
+    --color-badge-success-text: #6ee7b7;
+    --color-badge-success-border: #059669;
+
     /* Score highlight */
     --color-score-zero: #818cf8;
 
@@ -259,6 +269,10 @@
   --color-badge-default-text: #a8a29e;
   --color-badge-default-border: #3b3b5e;
 
+  --color-badge-success-bg: #064e3b;
+  --color-badge-success-text: #6ee7b7;
+  --color-badge-success-border: #059669;
+
   --color-score-zero: #818cf8;
   --color-skeleton: #3b3b5e;
   --color-backdrop: rgba(0, 0, 0, 0.6);
@@ -344,6 +358,9 @@
   --color-badge-default-bg: var(--color-badge-default-bg);
   --color-badge-default-text: var(--color-badge-default-text);
   --color-badge-default-border: var(--color-badge-default-border);
+  --color-badge-success-bg: var(--color-badge-success-bg);
+  --color-badge-success-text: var(--color-badge-success-text);
+  --color-badge-success-border: var(--color-badge-success-border);
 
   --color-chart-1: var(--color-chart-1);
   --color-chart-2: var(--color-chart-2);
